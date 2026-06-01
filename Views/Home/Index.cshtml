@@ -1,8 +1,206 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model CourseManagementSystem.ViewModels.HomeViewModel
+@{
+    ViewData["Title"] = "Home";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<section class="hero-section py-5" style="background: var(--bg);">
+    <div class="container">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6">
+                <span class="badge mb-3 px-3 py-2" style="background: var(--bg-soft); color: var(--primary); border: 1px solid var(--border);">🚀 Learn from the best</span>
+                <h1 class="display-4 fw-bold mb-3">Learn anything, <span style="color: var(--primary);">build your future</span>.</h1>
+                <p class="lead mb-4" style="color: var(--text-muted);">Join @Model.TotalStudents.ToString("N0")+ students mastering new skills with @Model.TotalCourses+ expert-led courses.</p>
+
+                <form asp-controller="Courses" asp-action="Index" method="get" class="d-flex gap-2 mb-4">
+                    <input name="q" type="search" class="form-control form-control-lg custom-input" placeholder="What do you want to learn today?" />
+                    <button class="btn btn-primary btn-lg px-4" type="submit">Search</button>
+                </form>
+
+                <div class="d-flex gap-4 flex-wrap">
+                    <div><div class="h4 mb-0 fw-bold" style="color: var(--text);">@Model.TotalCourses</div><small style="color: var(--text-muted);">Courses</small></div>
+                    <div><div class="h4 mb-0 fw-bold" style="color: var(--text);">@Model.TotalInstructors</div><small style="color: var(--text-muted);">Instructors</small></div>
+                    <div><div class="h4 mb-0 fw-bold" style="color: var(--text);">@Model.TotalStudents</div><small style="color: var(--text-muted);">Students</small></div>
+                    <div><div class="h4 mb-0 fw-bold" style="color: var(--text);">@Model.TotalCategories</div><small style="color: var(--text-muted);">Categories</small></div>
+                </div>
+            </div>
+            <div class="col-lg-6 text-center">
+                <img src="~/images/hero.svg" onerror="this.src='https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800';"
+                     alt="Learning" class="img-fluid rounded-4 shadow-lg border-custom" />
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-5" style="background: var(--bg-soft);">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-end mb-4">
+            <div>
+                <h2 class="fw-bold mb-1" style="color: var(--text);">Browse by Category</h2>
+                <p class="mb-0" style="color: var(--text-muted);">Explore courses across top categories</p>
+            </div>
+            <a asp-controller="Categories" asp-action="Index" class="btn btn-outline-primary">View all</a>
+        </div>
+        <div class="row g-3">
+            @foreach (var cat in Model.Categories)
+            {
+                <div class="col-6 col-md-4 col-lg-3">
+                    <a asp-controller="Courses" asp-action="Index" asp-route-categoryId="@cat.Id" class="text-decoration-none">
+                        <div class="card border-0 h-100 category-card">
+                            <div class="card-body text-center p-4">
+                                <div class="category-icon mb-3">📚</div>
+                                <h6 class="fw-bold mb-1" style="color: var(--text);">@cat.Name</h6>
+                                <small style="color: var(--text-muted);">@cat.Courses.Count courses</small>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+<section class="py-5" style="background: var(--bg);">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-end mb-4">
+            <div>
+                <h2 class="fw-bold mb-1" style="color: var(--text);">⭐ Featured Courses</h2>
+                <p class="mb-0" style="color: var(--text-muted);">Top-rated picks from our community</p>
+            </div>
+            <a asp-controller="Courses" asp-action="Index" class="btn btn-outline-primary">View all</a>
+        </div>
+        <div class="row g-4">
+            @foreach (var c in Model.FeaturedCourses)
+            {
+                @await Html.PartialAsync("_CourseCard", c)
+            }
+        </div>
+    </div>
+</section>
+
+<section class="py-5" style="background: var(--bg-soft);">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-end mb-4">
+            <div>
+                <h2 class="fw-bold mb-1" style="color: var(--text);">🔥 Trending Now</h2>
+                <p class="mb-0" style="color: var(--text-muted);">What students are enrolling in this week</p>
+            </div>
+        </div>
+        <div class="row g-4">
+            @foreach (var c in Model.TrendingCourses)
+            {
+                @await Html.PartialAsync("_CourseCard", c)
+            }
+        </div>
+    </div>
+</section>
+
+<section class="py-5" style="background: var(--bg);">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-end mb-4">
+            <div>
+                <h2 class="fw-bold mb-1" style="color: var(--text);">🆕 New Releases</h2>
+                <p class="mb-0" style="color: var(--text-muted);">Freshly added to the platform</p>
+            </div>
+        </div>
+        <div class="row g-4">
+            @foreach (var c in Model.NewCourses)
+            {
+                @await Html.PartialAsync("_CourseCard", c)
+            }
+        </div>
+    </div>
+</section>
+
+@if (Model.TopReviews.Any())
+{
+    <section class="py-5" style="background: var(--bg-soft);">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="fw-bold" style="color: var(--text);">What Students Say</h2>
+                <p class="text-muted" style="color: var(--text-muted);">Real reviews from real learners</p>
+            </div>
+            <div class="row g-4">
+                @foreach (var r in Model.TopReviews)
+                {
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card border-0 h-100 testimonial-card">
+                            <div class="card-body p-4">
+                                <div class="text-warning mb-2">
+                                    @for (int i = 0; i < r.Rate; i++)
+                                    {
+                                        <text>★</text>
+                                    }
+                                </div>
+                                <p class="mb-3" style="color: var(--text);">"@r.Comment"</p>
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar-circle me-2">@(r.Student?.UserName?.Substring(0, 1).ToUpper() ?? "U")</div>
+                                    <div>
+                                        <div class="fw-bold small" style="color: var(--text);">@r.Student?.UserName</div>
+                                        <small style="color: var(--text-muted);">@r.Course?.Title</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </section>
+}
+
+<section class="py-5" style="background: var(--bg);">
+    <div class="container">
+        <div class="cta-banner rounded-4 p-5 text-center text-white" style="background: var(--gradient-hero); box-shadow: var(--shadow-elegant);">
+            <h2 class="fw-bold mb-3">Ready to start learning?</h2>
+            <p class="lead mb-4 opacity-75">Join thousands of students building their future today.</p>
+            <a asp-controller="Account" asp-action="Register" class="btn btn-light btn-lg px-5 fw-bold" style="color: var(--primary); border: none;">Get started free</a>
+        </div>
+    </div>
+</section>
+
+<style>
+    /* ربط الكروت بالهوية البصرية ومراعاة المود المظلم والمضيء */
+    .category-card, .testimonial-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border) !important;
+        box-shadow: var(--shadow-card);
+        transition: transform .25s, box-shadow .25s;
+    }
+
+        .category-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-elegant) !important;
+            border-color: var(--primary) !important;
+        }
+
+    .category-icon {
+        font-size: 2.5rem;
+    }
+
+    .avatar-circle {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: var(--gradient-primary);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+    }
+
+    .custom-input {
+        background: var(--card-bg) !important;
+        color: var(--text) !important;
+        border: 1px solid var(--border) !important;
+    }
+
+        .custom-input:focus {
+            border-color: var(--primary) !important;
+            box-shadow: 0 0 0 3px rgba(109, 40, 217, 0.25) !important;
+        }
+
+    .border-custom {
+        border: 1px solid var(--border);
+    }
+</style>
