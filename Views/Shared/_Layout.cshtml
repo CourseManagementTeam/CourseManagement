@@ -337,15 +337,15 @@
                 <div class="collapse navbar-collapse" id="mainNav">
                     <ul class="navbar-nav ms-3 me-auto">
                         <li class="nav-item"><a class="nav-link-learnly" href="/">Home</a></li>
-                        <li class="nav-item"><a class="nav-link-learnly" href="/Courses">Courses</a></li>
-                        <li class="nav-item"><a class="nav-link-learnly" href="/Categories">Categories</a></li>
+                        <li class="nav-item"><a class="nav-link-learnly" href="/Course">Courses</a></li>
+                        <li class="nav-item"><a class="nav-link-learnly" href="/Category">Categories</a></li>
                         @if (currentUser)
                         {
                             <li class="nav-item"><a class="nav-link-learnly" href="/MyLearning">My Learning</a></li>
                         }
                     </ul>
 
-                    <form class="search-box me-3" action="/Courses" method="get">
+                    <form class="search-box me-3" action="/Course" method="get">
                         <i class="bi bi-search"></i>
                         <input type="search" name="q" placeholder="Search courses..." />
                     </form>
@@ -438,8 +438,8 @@
                 </div>
                 <div class="col-6 col-lg-2">
                     <div class="footer-title">Learn</div>
-                    <a class="footer-link" href="/Courses">All Courses</a>
-                    <a class="footer-link" href="/Categories">Categories</a>
+                    <a class="footer-link" href="/Course">All Courses</a>
+                    <a class="footer-link" href="/Category">Categories</a>
                     <a class="footer-link" href="/MyLearning">My Learning</a>
                     <a class="footer-link" href="/Wishlist">Wishlist</a>
                 </div>
