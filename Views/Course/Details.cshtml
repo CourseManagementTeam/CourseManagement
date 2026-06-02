@@ -1,0 +1,36 @@
+﻿@model CourseManagementSystem.ViewModels.CourseDetailsVM
+
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+<div class="text-white py-5" style="background: var(--gradient-hero);">
+    <div class="container">
+        <div class="row g-4 align-items-center">
+            <div class="col-lg-8">
+                <span class="badge bg-amber-500 mb-3 px-3 py-2 text-dark fw-bold rounded-pill" style="background: var(--secondary);">@Model.CategoryName</span>
+                <h1 class="display-5 fw-extrabold mb-3">@Model.Title</h1>
+                <p class="lead opacity-90 mb-4" style="max-width: 700px;">@Model.Description</p>
+                
+                <div class="d-flex flex-wrap align-items-center gap-4 text-sm opacity-90">
+                    <div><i class="bi bi-person-circle me-2"></i>Created by <strong>@Model.InstructorName</strong></div>
+                    <div><i class="bi bi-star-fill text-warning me-1"></i>@Model.AverageRating.ToString("0.0") (@Model.ReviewsCount reviews)</div>
+                    <div><i class="bi bi-folder-symlink me-1"></i> @Model.SectionsCount Sections • @Model.LessonsCount Lessons</div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-lg p-3 text-dark position-sticky" style="background: var(--card-bg); border-radius: 20px; top: 100px;">
+                    <img src="@(string.IsNullOrEmpty(Model.ImageUrl) ? "/images/courses/default.jpg" : $"/images/courses/{Model.ImageUrl}")" class="w-100 rounded-3 mb-3" style="height: 200px; object-fit: cover;" />
+                    <div class="p-2">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <span class="fs-2 fw-extrabold" style="color: var(--text);">@Model.Price.ToString("C")</span>
+                        </div>
+                        <button class="btn btn-primary-learnly w-100 py-2.5 mb-2 rounded-3 fs-5">Buy Now</button>
+                        <button class="btn btn-outline-learnly w-100 py-2 rounded-3 mb-3">Add to Cart</button>
+                        <small class="text-muted d-block text-center"><i class="bi bi-shield-check me-1"></i> 30-Day Money-Back Guarantee</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

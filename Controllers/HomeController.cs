@@ -1,25 +1,64 @@
-using CourseManagementSystem.Models;
+using CourseManagementSystem.Models; // تأكد من الـ namespace الصحيح للموديلز بتاعتك
+using CourseManagementSystem.ViewModels;
 using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace CourseManagementSystem.Controllers
+namespace Learnly.Controllers
 {
     public class HomeController : Controller
     {
-        public IActionResult Index()
-        {
-            return View();
-        }
+        private readonly ApplicationDbContext _db;
+        public HomeController(ApplicationDbContext db) { _db = db; }
 
-        public IActionResult Privacy()
+        public async Task<IActionResult> Index()
         {
-            return View();
-        }
+            var vm = new HomeViewModel
+            {
+                // 1. ترتيب حسب عدد التسجيلات (مع عمل Include للـ Enrollments)
+                FeaturedCourses = await _db.Courses
+                    .Include(c => c.Category)
+                    .Include(c => c.Instructor)
+                    .Include(c => c.Enrollments)
+                    .OrderByDescending(c => c.Enrollments.Count)
+                    .Take(8).ToListAsync(),
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+                // 2. استخدام الخاصية المحسوبة الجاهزة عندك AverageRating لزيادة الأداء
+                TrendingCourses = await _db.Courses
+                    .Include(c => c.Category)
+                    .Include(c => c.Instructor)
+                    .OrderByDescending(c => c.AverageRating)
+                    .Take(6).ToListAsync(),
+
+                // 3. تعديل CreatedAt إلى CreatedDate وتصفية الكورسات المنشورة فقط
+                NewCourses = await _db.Courses
+                    .Include(c => c.Category)
+                    .Include(c => c.Instructor)
+                    .Where(c => c.IsPublished)
+                    .OrderByDescending(c => c.CreatedDate)
+                    .Take(4).ToListAsync(),
+
+                // 4. عمل Include للكورسات عشان الـ Count يقرأ صح في الـ View
+                Categories = await _db.Categories
+                    .Include(c => c.Courses)
+                    .Take(8).ToListAsync(),
+
+                // 5. تعديل Rating إلى Rate و User إلى Student
+                TopReviews = await _db.Reviews
+                    .Include(r => r.Student)
+                    .Include(r => r.Course)
+                    .Where(r => r.Rate >= 5)
+                    .OrderByDescending(r => r.CreatedAt)
+                    .Take(3).ToListAsync(),
+
+                TotalCourses = await _db.Courses.CountAsync(),
+                TotalStudents = await _db.Users.CountAsync(), // يفضل مستقبلاً فلترتها برول الطالب
+                TotalInstructors = await _db.Users.CountAsync(), // يفضل مستقبلاً فلترتها برول المدرس
+                TotalCategories = await _db.Categories.CountAsync(),
+            };
+
+            return View(vm);
         }
     }
 }
