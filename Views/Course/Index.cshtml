@@ -45,7 +45,8 @@
                     <div class="card h-100 border-0 shadow-sm" style="background: var(--card-bg); border-radius: 16px; overflow: hidden; transition: transform 0.2s;">
                         <div class="position-relative">
                             <img src="@(string.IsNullOrEmpty(item.ImageUrl) ? "/images/courses/default.jpg" : $"/images/courses/{item.ImageUrl}")" class="card-img-top" style="height: 160px; object-fit: cover;" alt="@item.Title" />
-                            <span class="position-absolute top-3 start-3 badge bg-dark bg-opacity-75 rounded-pill px-3 py-2 text-white style="font-size: 0.75rem;">@item.CategoryName</span>
+                            <span class="position-absolute top-3 start-3 badge bg-dark bg-opacity-75 rounded-pill px-3 py-2 text-white"
+                                  style="font-size: 0.75rem;">@item.CategoryName</span>
                         </div>
                         <div class="card-body d-flex flex-column p-3">
                             <h5 class="card-title fw-bold text-truncate-2 mb-1" style="font-size: 1rem; line-height: 1.4; min-height: 2.8rem;">
@@ -59,7 +60,7 @@
                             </div>
 
                             <div class="mt-auto d-flex align-items-center justify-content-between pt-2" style="border-top: 1px solid var(--border);">
-                                <span class="fw-extrabold fs-5" style="color: var(--primary);">@item.Price.ToString("C")</span>
+                                <span class="fw-extrabold fs-5" style="color: var(--primary);">@item.Price.ToString("C", new System.Globalization.CultureInfo("en-US"))</span>
                                 <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary px-3 rounded-pill">View Info</a>
                             </div>
                         </div>

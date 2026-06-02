@@ -1,8 +1,9 @@
+using CourseManagementSystem.Data;
 using CourseManagementSystem.Models;
 using CourseManagementSystem.Repository;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-
+using System.Globalization;
 namespace CourseManagementSystem
 {
     public class Program
@@ -20,6 +21,12 @@ namespace CourseManagementSystem
             //builder.Services.AddDefaultIdentity<IdentityUser>(options => 
             //options.SignIn.RequireConfirmedAccount = true)
             //    .AddEntityFrameworkStores<ApplicationDbContext>();
+
+          
+            //price
+            var culture = new CultureInfo("en-US");
+            CultureInfo.DefaultThreadCurrentCulture = culture;
+            CultureInfo.DefaultThreadCurrentUICulture = culture;
 
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
             {
@@ -58,6 +65,11 @@ namespace CourseManagementSystem
             builder.Services.AddRazorPages();
             var app = builder.Build();
 
+            using (var scope = app.Services.CreateScope())
+            {
+                var services = scope.ServiceProvider;
+                //await SeedData.Initialize(services);
+            }
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {

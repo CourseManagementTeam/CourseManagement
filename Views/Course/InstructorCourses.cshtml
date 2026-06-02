@@ -39,7 +39,7 @@
                                 </div>
                             </td>
                             <td><span class="badge px-2.5 py-1.5 rounded" style="background: var(--bg-soft); color: var(--primary);">@item.Category?.Name</span></td>
-                            <td class="fw-bold">@item.Price.ToString("C")</td>
+                            <td class="fw-bold"> @item.Price.ToString("C", new System.Globalization.CultureInfo("en-US"))</td>
                             <td><i class="bi bi-star-fill text-warning me-1"></i>@item.AverageRating.ToString("0.0")</td>
                             <td class="px-4 text-end">
                                 <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-learnly me-1" title="Preview"><i class="bi bi-eye"></i></a>
