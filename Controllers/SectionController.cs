@@ -46,6 +46,44 @@ namespace CourseManagementSystem.Controllers
             return RedirectToAction("Index", new { courseId = vm.CourseId });
         }
 
+        // GET: Section/Edit/5
+        [HttpGet]
+        public IActionResult Edit(int id)
+        {
+            var section = _sectionRepository.GetById(id);
+
+            if (section == null)
+                return NotFound();
+
+            var vm = new SectionViewModel
+            {
+                CourseId = section.CourseId,
+                Title = section.Title
+            };
+
+            return View(vm);
+        }
+
+        // POST: Section/Edit/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Edit(int id, SectionViewModel vm)
+        {
+            if (!ModelState.IsValid)
+                return View(vm);
+
+            var section = _sectionRepository.GetById(id);
+
+            if (section == null)
+                return NotFound();
+
+            section.Title = vm.Title;
+
+            _sectionRepository.Update(section);
+            _sectionRepository.Save();
+
+            return RedirectToAction("Index", new { courseId = section.CourseId });
+        }
 
     }
 }
