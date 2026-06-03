@@ -1,7 +1,7 @@
 using CourseManagementSystem.Models;
-using CourseManagementSystem.Models;
 using CourseManagementSystem.Repository;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 
 namespace CourseManagementSystem
@@ -13,20 +13,14 @@ namespace CourseManagementSystem
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+                ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(connectionString));
+
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-            builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-                .AddEntityFrameworkStores<ApplicationDbContext>();
-
-            builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
-               .AddEntityFrameworkStores<ApplicationDbContext>()
-                .AddDefaultTokenProviders();
-
-<<<<<<< Updated upstream
-=======
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
             {
                 options.Password.RequireDigit = false;
@@ -36,7 +30,6 @@ namespace CourseManagementSystem
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
 
-            // ── Cookie Paths ──────────────────────────────────────────
             builder.Services.ConfigureApplicationCookie(options =>
             {
                 options.LoginPath = "/Account/Login";
@@ -44,17 +37,18 @@ namespace CourseManagementSystem
                 options.AccessDeniedPath = "/Account/AccessDenied";
             });
 
-            //view
             builder.Services.AddLocalization(options =>
             {
                 options.ResourcesPath = "Resources";
             });
+
             builder.Services
                 .AddControllersWithViews()
                 .AddViewLocalization();
 
->>>>>>> Stashed changes
-            //******************* Register Repositories *******************
+            builder.Services.AddRazorPages();
+
+            // Register Repositories
             builder.Services.AddScoped<ICourseRepository, CourseRepository>();
             builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
             builder.Services.AddScoped<ISectionRepository, SectionRepository>();
@@ -63,20 +57,20 @@ namespace CourseManagementSystem
             builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
             builder.Services.AddScoped<IWishlistRepository, WishlistRepository>();
 
-<<<<<<< Updated upstream
-=======
-            builder.Services.AddRazorPages();
-
->>>>>>> Stashed changes
             var app = builder.Build();
 
-            // ── Seed Roles ────────────────────────────────────────────
+            // Seed Roles
             using (var scope = app.Services.CreateScope())
             {
                 var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
                 foreach (var role in new[] { "Admin", "Instructor", "Student" })
+                {
                     if (!await roleManager.RoleExistsAsync(role))
+                    {
                         await roleManager.CreateAsync(new IdentityRole(role));
+                    }
+                }
             }
 
             // Configure the HTTP request pipeline.
@@ -89,18 +83,18 @@ namespace CourseManagementSystem
                 app.UseExceptionHandler("/Home/Error");
             }
 
-<<<<<<< Updated upstream
-=======
             app.UseRouting();
+
             app.UseAuthentication();
->>>>>>> Stashed changes
             app.UseAuthorization();
 
             app.MapStaticAssets();
-<<<<<<< Updated upstream
-=======
 
-            var supportedCultures = new[] { "en", "ar" };
+            var supportedCultures = new[]
+            {
+                "en",
+                "ar"
+            };
 
             var localizationOptions = new RequestLocalizationOptions()
                 .SetDefaultCulture("en")
@@ -109,19 +103,13 @@ namespace CourseManagementSystem
 
             app.UseRequestLocalization(localizationOptions);
 
->>>>>>> Stashed changes
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}")
                 .WithStaticAssets();
-<<<<<<< Updated upstream
-            app.MapRazorPages()
-               .WithStaticAssets();
-=======
 
             //app.MapRazorPages()
-            //   .WithStaticAssets();
->>>>>>> Stashed changes
+            //    .WithStaticAssets();
 
             app.Run();
         }

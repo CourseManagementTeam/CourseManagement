@@ -1,4 +1,44 @@
-html {
+body {
+    transition: .3s;
+}
+
+.navbar-brand {
+    font-weight: 700;
+}
+
+.footer-custom {
+    padding: 40px;
+    background: #111827;
+    color: white;
+}
+
+.sidebar {
+    width: 260px;
+    min-height: 100vh;
+    background: #111827;
+    color: white;
+}
+
+    .sidebar a {
+        display: block;
+        color: white;
+        text-decoration: none;
+        padding: 15px;
+    }
+
+        .sidebar a:hover {
+            background: #4F46E5;
+        }
+
+.card-stat {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,.1);
+}
+
+
+
+/*html {
   font-size: 14px;
 }
 
@@ -28,4 +68,4 @@ body {
 
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
   text-align: start;
-}
+}*/
