@@ -85,5 +85,34 @@ namespace CourseManagementSystem.Controllers
             return RedirectToAction("Index", new { courseId = section.CourseId });
         }
 
+        
+        // GET: Section/Delete/5
+        [HttpGet]
+        public IActionResult Delete(int id)
+        {
+            var section = _sectionRepository.GetById(id);
+
+            if (section == null)
+                return NotFound();
+
+            return View(section);
+        }
+
+        // POST: Section/Delete/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Delete(int id, Section section)
+        {
+            var sec = _sectionRepository.GetById(id);
+
+            if (sec == null)
+                return NotFound();
+
+            int courseId = sec.CourseId;
+
+            _sectionRepository.Delete(sec.Id);
+
+            return RedirectToAction("Index", new { courseId });
+        }
     }
 }
