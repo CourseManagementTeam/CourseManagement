@@ -48,7 +48,9 @@ namespace CourseManagementSystem.Controllers
                 var newLesson = new Lesson
                 {
                     Title = vm.Title,
-                    SectionId = vm.SectionId
+                    SectionId = vm.SectionId,
+                    VideoUrl = vm.VideoUrl,
+                    IsFreePreview = vm.IsFreePreview 
                 };
 
                 _lessonRepository.Add(newLesson);
@@ -96,6 +98,8 @@ namespace CourseManagementSystem.Controllers
                 return NotFound();
 
             lesson.Title = vm.Title;
+            lesson.VideoUrl = vm.VideoUrl;
+            lesson.IsFreePreview = vm.IsFreePreview;
 
             _lessonRepository.Update(lesson);
             _lessonRepository.Save();
