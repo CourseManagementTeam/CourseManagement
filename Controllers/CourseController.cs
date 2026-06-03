@@ -13,14 +13,23 @@ namespace CourseManagementSystem.Controllers
         private readonly ICourseRepository _courseRepository;
         private readonly ICategoryRepository _categoryRepository;
         private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly ICartRepository _cartRepository;
+        private readonly IEnrollmentRepository _enrollmentRepository;
+        private readonly ApplicationDbContext _context;
 
         public CourseController(
-            ICourseRepository courseRepository,
-            ICategoryRepository categoryRepository,
-            IWebHostEnvironment webHostEnvironment)
+            ApplicationDbContext context,
+    ICourseRepository courseRepository,
+    ICategoryRepository categoryRepository,
+    ICartRepository cartRepository,
+    IEnrollmentRepository enrollmentRepository,
+    IWebHostEnvironment webHostEnvironment)
         {
+            _context = context;
             _courseRepository = courseRepository;
             _categoryRepository = categoryRepository;
+            _cartRepository = cartRepository;
+            _enrollmentRepository = enrollmentRepository;
             _webHostEnvironment = webHostEnvironment;
         }
 
@@ -233,6 +242,95 @@ namespace CourseManagementSystem.Controllers
             return RedirectToAction(nameof(InstructorCourses));
         }
 
+        public IActionResult AddToCart(int id)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                TempData["Error"] = "Please login first";
+                return RedirectToAction("Login", "Account");
+            }
+
+            bool exists = _context.Wishlists.Any(w =>
+                w.StudentId == userId &&
+                w.CourseId == id);
+
+            if (!exists)
+            {
+                _context.Wishlists.Add(new Wishlist
+                {
+                    StudentId = userId,
+                    CourseId = id,
+                    AddedAt = DateTime.Now
+                });
+
+                _context.SaveChanges();
+            }
+
+            TempData["Success"] = "Course added to wishlist";
+
+            return RedirectToAction(nameof(Details), new { id });
+        }
+        public IActionResult BuyNow(int id)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                TempData["Error"] = "Please login first";
+                return RedirectToAction("Login", "Account");
+            }
+
+            bool exists = _context.Enrollments.Any(e =>
+                e.StudentId == userId &&
+                e.CourseId == id);
+
+            if (!exists)
+            {
+                _context.Enrollments.Add(new Enrollment
+                {
+                    StudentId = userId,
+                    CourseId = id,
+                    EnrolledAt = DateTime.Now
+                });
+
+                _context.SaveChanges();
+            }
+
+            TempData["Success"] = "Course purchased successfully";
+
+            return RedirectToAction(nameof(Details), new { id });
+        }
+
+        //public IActionResult BuyNow(int id)
+        //{
+        //    var userId =
+        //        User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        //    if (userId == null)
+        //    {
+        //        TempData["Error"] = "Please login first";
+        //        return RedirectToAction("Login", "Account");
+        //    }
+
+        //    Enrollment enrollment = new Enrollment
+        //    {
+        //        StudentId = userId,
+        //        CourseId = id,
+        //        EnrolledAt = DateTime.Now,
+        //        ProgressPercentage = 0,
+        //        IsCompleted = false
+        //    };
+
+        //    _enrollmentRepository.Add(enrollment);
+        //    _enrollmentRepository.Save();
+
+        //    TempData["Success"] = "Course purchased successfully";
+
+        //    return RedirectToAction(nameof(Details), new { id });
+        //}
+
         // --- ميثودز مساعدة لرفع وحذف الصور من السيرفر ---
         private string UploadImage(IFormFile file)
         {
@@ -255,6 +353,8 @@ namespace CourseManagementSystem.Controllers
             string filePath = Path.Combine(_webHostEnvironment.WebRootPath, "images", "courses", fileName);
             if (System.IO.File.Exists(filePath)) System.IO.File.Delete(filePath);
         }
+
+
     }
 }
 

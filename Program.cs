@@ -52,7 +52,7 @@ namespace CourseManagementSystem
             builder.Services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
             builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
             builder.Services.AddScoped<IWishlistRepository, WishlistRepository>();
-            
+            builder.Services.AddScoped<ICartRepository, CartRepository>();
             builder.Services.AddLocalization(options =>
             {
                 options.ResourcesPath = "Resources";

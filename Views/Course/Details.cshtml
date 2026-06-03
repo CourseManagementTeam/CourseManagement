@@ -25,8 +25,18 @@
                         <div class="d-flex justify-content-between align-items-center mb-4">
                             <span class="fs-2 fw-extrabold" style="color: var(--text);">@Model.Price.ToString("C", new System.Globalization.CultureInfo("en-US"))</span>
                         </div>
-                        <button class="btn btn-primary-learnly w-100 py-2.5 mb-2 rounded-3 fs-5">Buy Now</button>
-                        <button class="btn btn-outline-learnly w-100 py-2 rounded-3 mb-3">Add to Cart</button>
+                        <a asp-controller="Course"
+                           asp-action="BuyNow"
+                           asp-route-id="@Model.Id"
+                           class="btn btn-primary-learnly w-100 py-2 mb-2 rounded-3 fs-5">
+                            Buy Now
+                        </a>
+                        <a asp-controller="Course"
+                           asp-action="AddToCart"
+                           asp-route-id="@Model.Id"
+                           class="btn btn-outline-learnly w-100 py-2 rounded-3 mb-3">
+                            Add To Cart
+                        </a>
                         <small class="text-muted d-block text-center"><i class="bi bi-shield-check me-1"></i> 30-Day Money-Back Guarantee</small>
                     </div>
                 </div>

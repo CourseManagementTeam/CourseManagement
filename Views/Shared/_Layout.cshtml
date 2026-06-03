@@ -336,7 +336,7 @@
 
                 <div class="collapse navbar-collapse" id="mainNav">
                     <ul class="navbar-nav ms-3 me-auto">
-                        <li class="nav-item"><a class="nav-link-learnly" href="/">Home</a></li>
+                        <li class="nav-item"> <a class="nav-link-learnly" href="/Home/Index">Home</a></li>
                         <li class="nav-item"><a class="nav-link-learnly" href="/Course">Courses</a></li>
                         <li class="nav-item"><a class="nav-link-learnly" href="/Category">Categories</a></li>
                         @if (currentUser)
@@ -345,9 +345,14 @@
                         }
                     </ul>
 
-                    <form class="search-box me-3" action="/Course" method="get">
-                        <i class="bi bi-search"></i>
-                        <input type="search" name="q" placeholder="Search courses..." />
+                    <form class="search-box me-3"
+                          asp-controller="Course"
+                          asp-action="Index"
+                          method="get">
+
+                        <input type="search"
+                               name="search"
+                               placeholder="Search courses..." />
                     </form>
 
                     <div class="d-flex align-items-center gap-2">
