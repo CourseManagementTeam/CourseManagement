@@ -2,6 +2,7 @@
 using CourseManagementSystem.Repository;
 using CourseManagementSystem.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace CourseManagementSystem.Controllers
 {
@@ -113,6 +114,19 @@ namespace CourseManagementSystem.Controllers
             _sectionRepository.Delete(sec.Id);
 
             return RedirectToAction("Index", new { courseId });
+        }
+
+        // GET: Section/Content?courseId=1
+        [HttpGet]
+        public IActionResult Content(int courseId)
+        {
+            var sections = _sectionRepository.GetSectionsByCourseId(courseId);
+
+            var firstSection = sections.FirstOrDefault();
+            ViewBag.CourseTitle = firstSection?.Course?.Title ?? "Course Curriculum";
+            ViewBag.CourseId = courseId;
+
+            return View(sections);
         }
     }
 }
