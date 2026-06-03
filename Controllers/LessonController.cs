@@ -62,5 +62,45 @@ namespace CourseManagementSystem.Controllers
                 return View(vm);
             }
         }
+
+        // GET: Lesson/Edit/5
+        [HttpGet]
+        public IActionResult Edit(int id)
+        {
+            var lesson = _lessonRepository.GetById(id);
+
+            if (lesson == null)
+                return NotFound();
+
+            var vm = new LessonViewModel
+            {
+                Id = lesson.Id,
+                Title = lesson.Title,
+                SectionId = lesson.SectionId
+            };
+
+            return View(vm);
+        }
+
+        // POST: Lesson/Edit/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Edit(int id, LessonViewModel vm)
+        {
+            if (!ModelState.IsValid)
+                return View(vm);
+
+            var lesson = _lessonRepository.GetById(id);
+
+            if (lesson == null)
+                return NotFound();
+
+            lesson.Title = vm.Title;
+
+            _lessonRepository.Update(lesson);
+            _lessonRepository.Save();
+
+            return RedirectToAction(nameof(Index), new { sectionId = lesson.SectionId });
+        }
     }
 }
