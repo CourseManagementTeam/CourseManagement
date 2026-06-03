@@ -11,6 +11,15 @@ namespace CourseManagementSystem.Controllers
             _lessonRepository = lessonRepository;
         }
 
+        // GET: Lesson/Index?sectionId=1
+        [HttpGet]
+        public IActionResult Index(int sectionId)
+        {
+            ViewBag.SectionId = sectionId;
+
+            var lessons = _lessonRepository.GetLessonsBySectionId(sectionId);
+            return View(lessons);
+        }
 
     }
 }
