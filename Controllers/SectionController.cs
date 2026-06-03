@@ -29,9 +29,20 @@ namespace CourseManagementSystem.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Create(SectionViewModel vm)
         {
-            _sectionRepository.Add(new Section { CourseId = vm.CourseId, Title = vm.Title });
+            if (!ModelState.IsValid)
+                return View(vm);
+
+            _sectionRepository.Add(new Section
+            {
+                CourseId = vm.CourseId,
+                Title = vm.Title
+            });
+
+            _sectionRepository.Save();
+
             return RedirectToAction("Index", new { courseId = vm.CourseId });
         }
 
