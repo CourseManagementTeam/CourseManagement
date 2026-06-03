@@ -1,0 +1,154 @@
+@model CourseManagementSystem.ViewModels.UserProfileViewModel
+@{
+    ViewData["Title"] = "My Profile";
+}
+
+@section Styles {
+    <style>
+        .profile-wrapper {
+            max-width: 800px;
+            margin: 2.5rem auto;
+            padding: 0 1rem;
+        }
+
+        .profile-hero {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 2.5rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 2rem;
+            box-shadow: var(--shadow-card);
+        }
+
+        .profile-avatar-placeholder {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: var(--gradient-primary);
+            display: grid;
+            place-items: center;
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: #fff;
+            flex-shrink: 0;
+        }
+
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--border);
+            flex-shrink: 0;
+        }
+
+        .profile-info h1 {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--text);
+            margin-bottom: .3rem;
+        }
+
+        .profile-email {
+            color: var(--text-muted);
+            font-size: .9rem;
+            margin-bottom: .75rem;
+        }
+
+        .role-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: .4rem;
+            padding: .3rem .85rem;
+            border-radius: 999px;
+            font-size: .82rem;
+            font-weight: 600;
+        }
+
+        .role-admin      { background: rgba(239,68,68,.12);  color: #ef4444; }
+        .role-instructor { background: rgba(245,158,11,.12); color: #f59e0b; }
+        .role-student    { background: color-mix(in srgb, var(--primary) 12%, transparent); color: var(--primary); }
+
+        .profile-bio {
+            color: var(--text-muted);
+            font-size: .92rem;
+            margin-top: .85rem;
+            line-height: 1.6;
+        }
+
+        .btn-edit-profile {
+            display: inline-flex;
+            align-items: center;
+            gap: .5rem;
+            padding: .55rem 1.2rem;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: .9rem;
+            background: var(--gradient-primary);
+            color: #fff;
+            border: none;
+            text-decoration: none;
+            box-shadow: var(--shadow-elegant);
+            transition: all .15s;
+            margin-top: 1.25rem;
+        }
+
+        .btn-edit-profile:hover { opacity: .9; color: #fff; transform: translateY(-1px); }
+
+        @@media (max-width: 576px) {
+            .profile-hero { flex-direction: column; align-items: center; text-align: center; }
+        }
+    </style>
+}
+
+<div class="profile-wrapper">
+    <div class="profile-hero">
+
+        @if (!string.IsNullOrEmpty(Model.ProfileImageUrl))
+        {
+            <img src="@Model.ProfileImageUrl" alt="Profile" class="profile-avatar" />
+        }
+        else
+        {
+            <div class="profile-avatar-placeholder">
+                @Model.FullName.Substring(0, 1).ToUpper()
+            </div>
+        }
+
+        <div class="profile-info flex-grow-1">
+            <h1>@Model.FullName</h1>
+            <div class="profile-email">
+                <i class="bi bi-envelope me-1"></i>@Model.Email
+            </div>
+
+            @{
+                var roleClass = Model.Role == "Admin" ? "role-admin"
+                              : Model.Role == "Instructor" ? "role-instructor"
+                              : "role-student";
+                var roleIcon  = Model.Role == "Admin" ? "bi-shield-lock"
+                              : Model.Role == "Instructor" ? "bi-easel"
+                              : "bi-mortarboard";
+            }
+
+            <span class="role-badge @roleClass">
+                <i class="bi @roleIcon"></i> @Model.Role
+            </span>
+
+            @if (!string.IsNullOrEmpty(Model.Bio))
+            {
+                <p class="profile-bio">@Model.Bio</p>
+            }
+            else
+            {
+                <p class="profile-bio" style="font-style:italic;">No bio added yet.</p>
+            }
+
+            <a asp-controller="Account" asp-action="EditProfile" class="btn-edit-profile">
+                <i class="bi bi-pencil-square"></i> Edit Profile
+            </a>
+        </div>
+
+    </div>
+</div>
