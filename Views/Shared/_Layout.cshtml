@@ -336,12 +336,51 @@
 
                 <div class="collapse navbar-collapse" id="mainNav">
                     <ul class="navbar-nav ms-3 me-auto">
-                        <li class="nav-item"><a class="nav-link-learnly" href="/">Home</a></li>
-                        <li class="nav-item"><a class="nav-link-learnly" href="/Course">Courses</a></li>
-                        <li class="nav-item"><a class="nav-link-learnly" href="/Category">Categories</a></li>
+                        <li class="nav-item">
+                            <a class="nav-link-learnly" href="/">Home</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link-learnly" href="/Course">Courses</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link-learnly" href="/Category">Categories</a>
+                        </li>
+
                         @if (currentUser)
                         {
-                            <li class="nav-item"><a class="nav-link-learnly" href="/MyLearning">My Learning</a></li>
+                            <li class="nav-item">
+                                <a class="nav-link-learnly"
+                                   asp-controller="Dashboard"
+                                   asp-action="Index">
+                                    Dashboard
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link-learnly"
+                                   asp-controller="Enrollment"
+                                   asp-action="MyCourses">
+                                    My Courses
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link-learnly"
+                                   asp-controller="Wishlist"
+                                   asp-action="MyWishlist">
+                                    Wishlist
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link-learnly"
+                                   asp-controller="Review"
+                                   asp-action="MyReviews">
+                                    Reviews
+                                </a>
+                            </li>
                         }
                     </ul>
 
@@ -369,22 +408,87 @@
                                         <div class="fw-bold">@userName</div>
                                         <small class="text-muted">Student account</small>
                                     </li>
-                                    <li><hr class="dropdown-divider" /></li>
-                                    <li><a class="dropdown-item" href="/Profile"><i class="bi bi-person me-2"></i>Profile</a></li>
-                                    <li><a class="dropdown-item" href="/MyLearning"><i class="bi bi-collection-play me-2"></i>My Learning</a></li>
-                                    <li><a class="dropdown-item" href="/Wishlist"><i class="bi bi-heart me-2"></i>Wishlist</a></li>
+
+                                    <li>
+                                        <hr class="dropdown-divider" />
+                                    </li>
+
+                                    <li>
+                                        <a class="dropdown-item" href="/Profile">
+                                            <i class="bi bi-person me-2"></i>
+                                            Profile
+                                        </a>
+                                    </li>
+
+                                    <li>
+                                        <a class="dropdown-item"
+                                           asp-controller="Dashboard"
+                                           asp-action="Index">
+                                            <i class="bi bi-speedometer2 me-2"></i>
+                                            Dashboard
+                                        </a>
+                                    </li>
+
+                                    <li>
+                                        <a class="dropdown-item"
+                                           asp-controller="Enrollment"
+                                           asp-action="MyCourses">
+                                            <i class="bi bi-journal-bookmark me-2"></i>
+                                            My Courses
+                                        </a>
+                                    </li>
+
+                                    <li>
+                                        <a class="dropdown-item"
+                                           asp-controller="Wishlist"
+                                           asp-action="MyWishlist">
+                                            <i class="bi bi-heart me-2"></i>
+                                            Wishlist
+                                        </a>
+                                    </li>
+
+                                    <li>
+                                        <a class="dropdown-item"
+                                           asp-controller="Review"
+                                           asp-action="MyReviews">
+                                            <i class="bi bi-star me-2"></i>
+                                            My Reviews
+                                        </a>
+                                    </li>
+
                                     @if (User.IsInRole("Instructor"))
                                     {
-                                        <li><a class="dropdown-item" href="/Instructor"><i class="bi bi-easel me-2"></i>Instructor Dashboard</a></li>
+                                        <li>
+                                            <a class="dropdown-item" href="/Instructor">
+                                                <i class="bi bi-easel me-2"></i>
+                                                Instructor Dashboard
+                                            </a>
+                                        </li>
                                     }
+
                                     @if (User.IsInRole("Admin"))
                                     {
-                                        <li><a class="dropdown-item" href="/Admin"><i class="bi bi-shield-lock me-2"></i>Admin Panel</a></li>
+                                        <li>
+                                            <a class="dropdown-item" href="/Admin">
+                                                <i class="bi bi-shield-lock me-2"></i>
+                                                Admin Panel
+                                            </a>
+                                        </li>
                                     }
-                                    <li><hr class="dropdown-divider" /></li>
+
                                     <li>
-                                        <form asp-controller="Account" asp-action="Logout" method="post" class="px-3">
-                                            <button type="submit" class="btn btn-link p-0 text-danger">Log out</button>
+                                        <hr class="dropdown-divider" />
+                                    </li>
+
+                                    <li>
+                                        <form asp-controller="Account"
+                                              asp-action="Logout"
+                                              method="post"
+                                              class="px-3">
+                                            <button type="submit"
+                                                    class="btn btn-link p-0 text-danger">
+                                                Log out
+                                            </button>
                                         </form>
                                     </li>
                                 </ul>
