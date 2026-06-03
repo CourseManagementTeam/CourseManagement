@@ -82,7 +82,7 @@ namespace CourseManagementSystem.Controllers
             return View(vm);
         }
 
-        // POST: Lesson/Edit/5
+        // Lesson/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Edit(int id, LessonViewModel vm)
@@ -101,6 +101,36 @@ namespace CourseManagementSystem.Controllers
             _lessonRepository.Save();
 
             return RedirectToAction(nameof(Index), new { sectionId = lesson.SectionId });
+        }
+
+        // GET: Lesson/Delete/5
+        [HttpGet]
+        public IActionResult Delete(int id)
+        {
+            var lesson = _lessonRepository.GetById(id);
+
+            if (lesson == null)
+                return NotFound();
+
+            return View(lesson); 
+        }
+
+        // POST: Lesson/Delete/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Delete(int id, Lesson lessonFromForm)
+        {
+            var lesson = _lessonRepository.GetById(id);
+
+            if (lesson == null)
+                return NotFound();
+
+            int savedSectionId = lesson.SectionId; 
+
+            _lessonRepository.Delete(id);
+            _lessonRepository.Save();
+
+            return RedirectToAction(nameof(Index), new { sectionId = savedSectionId });
         }
     }
 }
