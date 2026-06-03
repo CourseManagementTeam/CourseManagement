@@ -1,0 +1,90 @@
+﻿@model CourseManagementSystem.ViewModels.StudentDashboardVM
+
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="container py-4">
+
+    <h2 class="fw-bold mb-4">
+        <i class="bi bi-speedometer2"></i>
+        Student Dashboard
+    </h2>
+
+    <div class="row g-4 mb-5">
+
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <h2 class="text-primary">@Model.TotalCourses</h2>
+                    <p class="mb-0">Enrolled Courses</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <h2 class="text-success">@Model.CompletedCourses</h2>
+                    <p class="mb-0">Completed</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <h2 class="text-danger">@Model.WishlistCount</h2>
+                    <p class="mb-0">Wishlist</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <h2 class="text-warning">@Model.ReviewsCount</h2>
+                    <p class="mb-0">Reviews</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <h3 class="fw-bold mb-3">
+        Recent Reviews
+    </h3>
+
+    @if (Model.RecentReviews.Any())
+    {
+        @foreach (var review in Model.RecentReviews)
+        {
+            <div class="card shadow-sm mb-3">
+
+                <div class="card-body">
+
+                    <h5>
+                        @review.Course?.Title
+                    </h5>
+
+                    <span class="badge bg-warning text-dark">
+                        @review.Rate / 5
+                    </span>
+
+                    <p class="mt-2">
+                        @review.Comment
+                    </p>
+
+                </div>
+
+            </div>
+        }
+    }
+    else
+    {
+        <div class="alert alert-info">
+            No reviews yet.
+        </div>
+    }
+
+</div>
