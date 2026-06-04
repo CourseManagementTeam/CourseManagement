@@ -1,9 +1,10 @@
+using CourseManagementSystem.Data;
 using CourseManagementSystem.Models;
 using CourseManagementSystem.Repository;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
-
+using System.Globalization;
 namespace CourseManagementSystem
 {
     public class Program
@@ -21,6 +22,12 @@ namespace CourseManagementSystem
 
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
+          
+            //price
+            var culture = new CultureInfo("en-US");
+            CultureInfo.DefaultThreadCurrentCulture = culture;
+            CultureInfo.DefaultThreadCurrentUICulture = culture;
+
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
             {
                 options.Password.RequireDigit = false;
@@ -36,7 +43,22 @@ namespace CourseManagementSystem
                 options.LogoutPath = "/Account/Logout";
                 options.AccessDeniedPath = "/Account/AccessDenied";
             });
+<<<<<<< HEAD
+            builder.Services
+    .AddControllersWithViews()
+    .AddViewLocalization();
+            //******************* Register Repositories *******************
+            builder.Services.AddScoped<ICourseRepository, CourseRepository>();
+            builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+            builder.Services.AddScoped<ISectionRepository, SectionRepository>();
+            builder.Services.AddScoped<ILessonRepository, LessonRepository>();
+            builder.Services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
+            builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
+            builder.Services.AddScoped<IWishlistRepository, WishlistRepository>();
+            builder.Services.AddScoped<ICartRepository, CartRepository>();
+=======
 
+>>>>>>> dev
             builder.Services.AddLocalization(options =>
             {
                 options.ResourcesPath = "Resources";
@@ -59,6 +81,13 @@ namespace CourseManagementSystem
 
             var app = builder.Build();
 
+<<<<<<< HEAD
+            using (var scope = app.Services.CreateScope())
+            {
+                var services = scope.ServiceProvider;
+                //await SeedData.Initialize(services);
+            }
+=======
             // Seed Roles
             using (var scope = app.Services.CreateScope())
             {
@@ -73,6 +102,7 @@ namespace CourseManagementSystem
                 }
             }
 
+>>>>>>> dev
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {

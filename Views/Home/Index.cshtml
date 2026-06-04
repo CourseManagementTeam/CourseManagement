@@ -11,8 +11,11 @@
                 <h1 class="display-4 fw-bold mb-3">Learn anything, <span style="color: var(--primary);">build your future</span>.</h1>
                 <p class="lead mb-4" style="color: var(--text-muted);">Join @Model.TotalStudents.ToString("N0")+ students mastering new skills with @Model.TotalCourses+ expert-led courses.</p>
 
-                <form asp-controller="Courses" asp-action="Index" method="get" class="d-flex gap-2 mb-4">
-                    <input name="q" type="search" class="form-control form-control-lg custom-input" placeholder="What do you want to learn today?" />
+                <form asp-controller="Course"
+                      asp-action="Index" method="get" class="d-flex gap-2 mb-4">
+                    <input name="search" type="search"
+                           class="form-control form-control-lg custom-input"
+                           placeholder="What do you want to learn today?" />
                     <button class="btn btn-primary btn-lg px-4" type="submit">Search</button>
                 </form>
 
@@ -38,16 +41,37 @@
                 <h2 class="fw-bold mb-1" style="color: var(--text);">Browse by Category</h2>
                 <p class="mb-0" style="color: var(--text-muted);">Explore courses across top categories</p>
             </div>
-            <a asp-controller="Categories" asp-action="Index" class="btn btn-outline-primary">View all</a>
+            <a asp-controller="Category" asp-action="Index" class="btn btn-outline-primary">View all</a>
         </div>
         <div class="row g-3">
             @foreach (var cat in Model.Categories)
             {
                 <div class="col-6 col-md-4 col-lg-3">
-                    <a asp-controller="Courses" asp-action="Index" asp-route-categoryId="@cat.Id" class="text-decoration-none">
+                    <a asp-controller="Course"
+                       asp-action="Index"
+                       asp-route-categoryId="@cat.Id" class="text-decoration-none">
                         <div class="card border-0 h-100 category-card">
                             <div class="card-body text-center p-4">
-                                <div class="category-icon mb-3">📚</div>
+                                <div class="category-icon mb-3">
+                                    @switch (cat.Name)
+                                    {
+                                        case "Programming":
+                                            <span>💻</span>
+                                            break;
+
+                                        case "Design":
+                                            <span>🎨</span>
+                                            break;
+
+                                        case "Business":
+                                            <span>📈</span>
+                                            break;
+
+                                        default:
+                                            <span>📚</span>
+                                            break;
+                                    }
+                                </div>
                                 <h6 class="fw-bold mb-1" style="color: var(--text);">@cat.Name</h6>
                                 <small style="color: var(--text-muted);">@cat.Courses.Count courses</small>
                             </div>
@@ -66,7 +90,7 @@
                 <h2 class="fw-bold mb-1" style="color: var(--text);">⭐ Featured Courses</h2>
                 <p class="mb-0" style="color: var(--text-muted);">Top-rated picks from our community</p>
             </div>
-            <a asp-controller="Courses" asp-action="Index" class="btn btn-outline-primary">View all</a>
+            <a asp-controller="Course" asp-action="Index" class="btn btn-outline-primary">View all</a>
         </div>
         <div class="row g-4">
             @foreach (var c in Model.FeaturedCourses)
@@ -104,6 +128,28 @@
         </div>
         <div class="row g-4">
             @foreach (var c in Model.NewCourses)
+            {
+                @await Html.PartialAsync("_CourseCard", c)
+            }
+        </div>
+    </div>
+</section>
+
+<section class="py-5" style="background: var(--bg-soft);">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-end mb-4">
+            <div>
+                <h2 class="fw-bold mb-1" style="color: var(--text);">
+                    🔥 Most Popular Courses
+                </h2>
+                <p class="mb-0" style="color: var(--text-muted);">
+                    Top enrolled courses by students
+                </p>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            @foreach (var c in Model.MostPopularCourses)
             {
                 @await Html.PartialAsync("_CourseCard", c)
             }

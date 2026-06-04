@@ -9,6 +9,7 @@ namespace CourseManagementSystem.ViewModels
         public List<Course> NewCourses { get; set; } = new();
         public List<Category> Categories { get; set; } = new();
         public List<Review> TopReviews { get; set; } = new();
+        public List<Course> MostPopularCourses { get; set; } = new();
 
         public int TotalCourses { get; set; }
         public int TotalStudents { get; set; }
