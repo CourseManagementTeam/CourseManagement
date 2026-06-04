@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using CourseManagementSystem.Models;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
 
 namespace CourseManagementSystem.ViewModels
@@ -22,7 +23,10 @@ namespace CourseManagementSystem.ViewModels
             [Required]
             public int CategoryId { get; set; }
 
-            public IFormFile? ImageFile { get; set; }
+        [DataType(DataType.Upload)]
+        [AllowedExtensions(new string[] { ".jpg", ".jpeg", ".png", ".webp" }, ErrorMessage = "Only .jpg, .jpeg, .png, and .webp images are allowed!")]
+        [MaxFileSize(5 * 1024 * 1024, ErrorMessage = "Maximum allowed file size is 5 MB!")]
+        public IFormFile? ImageFile { get; set; }
 
             public IEnumerable<SelectListItem>? Categories { get; set; }
         }

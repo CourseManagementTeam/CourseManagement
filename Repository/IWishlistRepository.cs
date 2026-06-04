@@ -2,14 +2,9 @@
 
 namespace CourseManagementSystem.Repository
 {
-    public interface IWishlistRepository
+    public interface IWishlistRepository : IRepository<Wishlist>
     {
-        IEnumerable<Wishlist> GetWishlistByStudentId(string studentId);
-
-        void Add(Wishlist wishlist);
-
-        void Delete(string studentId, int courseId);
-
-        void Save();
+      
+        Task<bool> IsInWishlistAsync(string studentId, int courseId);
     }
 }

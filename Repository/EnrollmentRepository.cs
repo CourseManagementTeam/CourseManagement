@@ -3,15 +3,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CourseManagementSystem.Repository
 {
-    public class EnrollmentRepository
-    : Repository<Enrollment>,
-      IEnrollmentRepository
+    public class EnrollmentRepository : Repository<Enrollment>, IEnrollmentRepository
     {
-        public EnrollmentRepository(ApplicationDbContext context)
-            : base(context)
+        public EnrollmentRepository(ApplicationDbContext context) : base(context) { }
+
+        public async Task<bool> IsEnrolledAsync(string studentId, int courseId)
         {
+            return await _context.Enrollments.AnyAsync(e => e.StudentId == studentId && e.CourseId == courseId);
         }
     }
+}
     //public class EnrollmentRepository : IEnrollmentRepository
     //{
     //    private readonly ApplicationDbContext _context;
@@ -56,4 +57,4 @@ namespace CourseManagementSystem.Repository
     //        _context.SaveChanges();
     //    }
     //}
-}
+//}

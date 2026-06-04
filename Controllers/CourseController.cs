@@ -8,6 +8,7 @@ using System.Security.Claims;
 
 namespace CourseManagementSystem.Controllers
 {
+    [Authorize]
     public class CourseController : Controller
     {
         private readonly ICourseRepository _courseRepository;
@@ -34,6 +35,7 @@ namespace CourseManagementSystem.Controllers
         }
 
         // 1. شاشة عرض الكورسات العامة (Search & Filter)
+        [AllowAnonymous]
         public IActionResult Index(string? search, int? categoryId)
         {
             var courses = _courseRepository.SearchCourses(search, categoryId);
@@ -56,17 +58,18 @@ namespace CourseManagementSystem.Controllers
         }
 
         // 2. كورسات الـ Instructor الحالي فقط (مطلوبة بالتكليف)
-        //[Authorize]
+        [Authorize(Roles = "Instructor")]
         public IActionResult InstructorCourses()
         {
             // بمجرد تفعيل اللوجن، السطر القادم سيسحب الـ ID الحقيقي للمستخدم الحالي
-            var instructorId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "TEMP";
+            var instructorId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
 
             var courses = _courseRepository.GetCoursesByInstructor(instructorId);
             return View(courses);
         }
 
         // 3. تفاصيل الكورس بالتصميم الفخم
+        [AllowAnonymous]
         public IActionResult Details(int id)
         {
             var course = _courseRepository.GetCourseDetails(id);
@@ -93,7 +96,7 @@ namespace CourseManagementSystem.Controllers
         }
 
         // 4. إنشاء كورس جديد (GET)
-        //[Authorize]
+        [Authorize(Roles = "Instructor")]
         [HttpGet]
         public IActionResult Create()
         {
@@ -110,6 +113,7 @@ namespace CourseManagementSystem.Controllers
         }
 
         // 5. إنشاء كورس جديد (POST)
+        [Authorize(Roles = "Instructor")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Create(CreateCourseVM vm)
@@ -130,7 +134,8 @@ namespace CourseManagementSystem.Controllers
                 fileName = UploadImage(vm.ImageFile);
             }
 
-            var instructorId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "TEMP";
+            var instructorId =
+  User.FindFirstValue(ClaimTypes.NameIdentifier)!;
 
             Course course = new Course
             {
@@ -151,12 +156,17 @@ namespace CourseManagementSystem.Controllers
         }
 
         // 6. تعديل كورس (GET)
-        //[Authorize]
+        [Authorize(Roles = "Instructor")]
         [HttpGet]
         public IActionResult Edit(int id)
         {
             var course = _courseRepository.GetById(id);
             if (course == null) return NotFound();
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (course.InstructorId != userId)
+            {
+                return Forbid();
+            }
 
             var vm = new EditCourseVM
             {
@@ -179,6 +189,7 @@ namespace CourseManagementSystem.Controllers
         }
 
         // 7. تعديل كورس (POST)
+        [Authorize(Roles = "Instructor")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Edit(EditCourseVM vm)
@@ -195,6 +206,12 @@ namespace CourseManagementSystem.Controllers
 
             var course = _courseRepository.GetById(vm.Id);
             if (course == null) return NotFound();
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (course.InstructorId != userId)
+            {
+                return Forbid();
+            }
 
             if (vm.ImageFile != null)
             {
@@ -217,32 +234,53 @@ namespace CourseManagementSystem.Controllers
         }
 
         // 8. حذف كورس (GET)
-        //[Authorize]
+        [Authorize(Roles = "Instructor")]
         [HttpGet]
         public IActionResult Delete(int id)
         {
             var course = _courseRepository.GetCourseDetails(id);
             if (course == null) return NotFound();
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (course.InstructorId != userId)
+            {
+                return Forbid();
+            }
             return View(course);
         }
 
         // 9. تأكيد الحذف (POST)
+        [Authorize(Roles = "Instructor")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(int id)
         {
             var course = _courseRepository.GetById(id);
-            if (course != null)
+
+            if (course == null)
             {
-                DeleteImage(course.ImageUrl);
-                _courseRepository.Delete(id);
-                _courseRepository.Save();
-                TempData["Success"] = "Course deleted successfully!";
+                return NotFound();
             }
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (course.InstructorId != userId)
+            {
+                return Forbid();
+            }
+
+            DeleteImage(course.ImageUrl);
+
+            _courseRepository.Delete(id);
+            _courseRepository.Save();
+
+            TempData["Success"] = "Course deleted successfully!";
+
             return RedirectToAction(nameof(InstructorCourses));
         }
 
-        public IActionResult AddToCart(int id)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult AddToWishlist(int id)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
@@ -272,6 +310,9 @@ namespace CourseManagementSystem.Controllers
 
             return RedirectToAction(nameof(Details), new { id });
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult BuyNow(int id)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -303,37 +344,24 @@ namespace CourseManagementSystem.Controllers
             return RedirectToAction(nameof(Details), new { id });
         }
 
-        //public IActionResult BuyNow(int id)
-        //{
-        //    var userId =
-        //        User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-        //    if (userId == null)
-        //    {
-        //        TempData["Error"] = "Please login first";
-        //        return RedirectToAction("Login", "Account");
-        //    }
-
-        //    Enrollment enrollment = new Enrollment
-        //    {
-        //        StudentId = userId,
-        //        CourseId = id,
-        //        EnrolledAt = DateTime.Now,
-        //        ProgressPercentage = 0,
-        //        IsCompleted = false
-        //    };
-
-        //    _enrollmentRepository.Add(enrollment);
-        //    _enrollmentRepository.Save();
-
-        //    TempData["Success"] = "Course purchased successfully";
-
-        //    return RedirectToAction(nameof(Details), new { id });
-        //}
-
+      
         // --- ميثودز مساعدة لرفع وحذف الصور من السيرفر ---
         private string UploadImage(IFormFile file)
         {
+           
+            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".webp" };
+            var extension = Path.GetExtension(file.FileName).ToLower();
+
+            if (!allowedExtensions.Contains(extension))
+            {
+                ModelState.AddModelError("", "Invalid file type.");
+            }
+
+           
+            if (file.Length > 5 * 1024 * 1024)
+            {
+                ModelState.AddModelError("", "Invalid file type.");
+            }
             string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images", "courses");
             if (!Directory.Exists(uploadsFolder)) Directory.CreateDirectory(uploadsFolder);
 

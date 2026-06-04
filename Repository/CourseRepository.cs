@@ -46,7 +46,7 @@ namespace CourseManagementSystem.Repository
             if (!string.IsNullOrEmpty(search))
             {
                 query = query.Where(c =>
-                    c.Title.Contains(search) ||
+                   EF.Functions.Like(c.Title, $"%{search}%") ||
                     c.Description.Contains(search));
             }
 

@@ -18,7 +18,15 @@ namespace CourseManagementSystem.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var vm = new HomeViewModel
+            var studentRoleId = await _db.Roles
+     .Where(r => r.Name == "Student")
+     .Select(r => r.Id)
+     .FirstOrDefaultAsync();
+
+            var instructorRoleId = await _db.Roles
+                .Where(r => r.Name == "Instructor")
+                .Select(r => r.Id)
+                .FirstOrDefaultAsync(); var vm = new HomeViewModel
             {
                 FeaturedCourses = await _db.Courses
          .Include(c => c.Category)
@@ -64,8 +72,11 @@ namespace CourseManagementSystem.Controllers
          .ToListAsync(),
 
                 TotalCourses = await _db.Courses.CountAsync(),
-                TotalStudents = await _db.Users.CountAsync(),
-                TotalInstructors = await _db.Users.CountAsync(),
+                    TotalStudents = await _db.UserRoles
+    .CountAsync(ur => ur.RoleId == studentRoleId),
+
+                    TotalInstructors = await _db.UserRoles
+    .CountAsync(ur => ur.RoleId == instructorRoleId),
                 TotalCategories = await _db.Categories.CountAsync(),
             };
 

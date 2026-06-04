@@ -2,10 +2,12 @@
 
 namespace CourseManagementSystem.Repository
 {
-    public interface IEnrollmentRepository
-    : IRepository<Enrollment>
+    public interface IEnrollmentRepository : IRepository<Enrollment>
     {
+       
+        Task<bool> IsEnrolledAsync(string studentId, int courseId);
     }
+}
     //public interface IEnrollmentRepository
     //{
     //    IEnumerable<Enrollment> GetAll();
@@ -18,4 +20,4 @@ namespace CourseManagementSystem.Repository
 
     //    void Save();
     //}
-}
+//}
