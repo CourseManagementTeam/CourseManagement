@@ -1,0 +1,135 @@
+﻿@model IEnumerable<CourseManagementSystem.Models.Section>
+
+@{
+    ViewData["Title"] = "Course Curriculum";
+    var courseTitle = ViewBag.CourseTitle as string;
+    var courseId = (int)ViewBag.CourseId;
+}
+
+<style>
+    :root {
+        --learnly-purple: #7c4dff;
+        --learnly-purple-light: #f3efff;
+        --learnly-text-dark: #1d1b4b;
+        --learnly-border: #e2e8f0;
+    }
+
+    .accordion-item {
+        border: 1px solid var(--learnly-border) !important;
+        border-radius: 12px !important;
+        overflow: hidden;
+        margin-bottom: 1rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    }
+
+    .accordion-button {
+        background-color: #ffffff !important;
+        color: var(--learnly-text-dark) !important;
+        font-weight: 600;
+        padding: 1.25rem;
+    }
+
+    .accordion-button:not(.collapsed) {
+        background-color: var(--learnly-purple-light) !important;
+        color: var(--learnly-purple) !important;
+        box-shadow: none !important;
+    }
+
+    .accordion-button::after {
+        filter: hue-rotate(250deg);
+    }
+
+    .lesson-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.85rem 1.25rem;
+        border-bottom: 1px solid var(--learnly-border);
+        transition: background-color 0.2s ease;
+    }
+
+    .lesson-item:last-child {
+        border-bottom: none;
+    }
+
+    .lesson-item:hover {
+        background-color: #f8fafc;
+    }
+</style>
+
+<div class="container my-5">
+    
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+        <div>
+            <span class="text-uppercase text-muted fw-bold small" style="letter-spacing: 1px;">Course Curriculum</span>
+            <h2 class="fw-bold mt-1" style="color: var(--learnly-text-dark);">📚 @courseTitle</h2>
+        </div>
+        
+        <div>
+            <a asp-controller="Section" asp-action="Index" asp-route-courseId="@courseId" class="btn btn-outline-secondary btn-sm rounded-3">
+                <i class="fas fa-cog me-1"></i> Manage Curriculum
+            </a>
+        </div>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="text-center py-5 bg-white rounded-4 border p-5">
+            <div class="fs-1 text-muted mb-3">📁</div>
+            <h5 class="fw-bold text-dark">No content uploaded yet</h5>
+            <p class="text-muted small">This course doesn't have any sections or lessons at the moment.</p>
+        </div>
+    }
+    else
+    {
+        <div class="accordion" id="curriculumAccordion">
+            @{ var sectionIndex = 0; }
+            @foreach (var sec in Model)
+            {
+                sectionIndex++;
+                var collapseId = $"collapse{sec.Id}";
+                var headingId = $"heading{sec.Id}";
+
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="@headingId">
+                        <button class="accordion-button @(sectionIndex > 1 ? "collapsed" : "")" type="button" data-bs-toggle="collapse" data-bs-target="#@collapseId" aria-expanded="@(sectionIndex == 1 ? "true" : "false")" aria-controls="@collapseId">
+                            <div class="d-flex justify-content-between w-100 align-items-center pe-3">
+                                <div>
+                                    <span class="text-muted small me-2">Section @sectionIndex:</span>
+                                    <span>@sec.Title</span> </div>
+                                <span class="badge bg-light text-secondary border fw-normal small px-2 py-1" style="font-size: 0.75rem;">
+                                    @(sec.Lessons?.Count ?? 0) Lessons
+                                </span>
+                            </div>
+                        </button>
+                    </h2>
+                    
+                    <div id="@collapseId" class="accordion-collapse collapse @(sectionIndex == 1 ? "show" : "")" aria-labelledby="@headingId" data-bs-parent="#curriculumAccordion">
+                        <div class="accordion-body p-0">
+                            
+                            @if (sec.Lessons == null || !sec.Lessons.Any())
+                            {
+                                <div class="p-4 text-center text-muted small italic">
+                                    <i class="far fa-folder-open me-1"></i> No lessons added to this section yet.
+                                </div>
+                            }
+                            else
+                            {
+                                @foreach (var lesson in sec.Lessons)
+                                {
+                                    <div class="lesson-item">
+                                        <div class="d-flex align-items-center">
+                                            <i class="far fa-play-circle me-3 text-muted fs-5"></i>
+                                            <span class="text-dark fw-medium" style="font-size: 0.95rem;">@lesson.Title</span>
+                                        </div>
+                                    </div>
+                                }
+                            }
+
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

@@ -1,0 +1,45 @@
+﻿@model IEnumerable<CourseManagementSystem.Models.Review>
+
+@{
+    ViewData["Title"] = "My Reviews";
+}
+
+<div class="container py-4">
+
+    <h2 class="fw-bold mb-4">
+        <i class="bi bi-star-fill text-warning"></i>
+        My Reviews
+    </h2>
+
+    @foreach (var review in Model)
+    {
+        <div class="card shadow-sm border-0 mb-3">
+
+            <div class="card-body">
+
+                <div class="d-flex justify-content-between">
+
+                    <h5 class="fw-bold">
+                        @review.Course?.Title
+                    </h5>
+
+                    <span class="badge bg-warning text-dark">
+                        @review.Rate / 5
+                    </span>
+
+                </div>
+
+                <p class="text-muted mt-2">
+                    @review.Comment
+                </p>
+
+                <small class="text-secondary">
+                    @review.CreatedAt.ToString("dd MMM yyyy")
+                </small>
+
+            </div>
+
+        </div>
+    }
+
+</div>

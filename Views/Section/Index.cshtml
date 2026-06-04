@@ -1,0 +1,155 @@
+﻿@model IEnumerable<CourseManagementSystem.Models.Section>
+
+@{
+    ViewData["Title"] = "Course Curriculum";
+}
+
+<style>
+    :root {
+        --learnly-purple: #7c4dff;
+        --learnly-purple-hover: #6536ec;
+        --learnly-bg-light: #f8f9fa;
+        --learnly-text-dark: #1d1b4b;
+        --learnly-border: #e2e8f0;
+    }
+
+    body {
+        background-color: var(--learnly-bg-light);
+    }
+
+    .curriculum-header {
+        background: #ffffff;
+        border: 1px solid var(--learnly-border);
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    }
+
+    .learnly-title {
+        color: var(--learnly-text-dark);
+        font-weight: 700;
+    }
+
+    .section-card {
+        background: #ffffff;
+        border: 1px solid var(--learnly-border);
+        border-radius: 12px;
+        margin-bottom: 1rem;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .section-card:hover {
+        hd-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    .section-header-row {
+        padding: 1.25rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .section-name {
+        color: var(--learnly-text-dark);
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+
+    .btn-learnly-purple {
+        background-color: var(--learnly-purple);
+        color: #ffffff;
+        font-weight: 600;
+        border: none;
+        border-radius: 8px;
+        padding: 0.5rem 1.25rem;
+        font-size: 0.9rem;
+        transition: all 0.2s ease;
+    }
+
+    .btn-learnly-purple:hover {
+        background-color: var(--learnly-purple-hover);
+        color: #ffffff;
+    }
+
+    .btn-learnly-outline {
+        background-color: transparent;
+        color: #64748b;
+        font-weight: 600;
+        border: 1px solid var(--learnly-border);
+        border-radius: 8px;
+        padding: 0.5rem 1rem;
+        font-size: 0.85rem;
+        transition: all 0.2s ease;
+    }
+
+    .btn-learnly-outline:hover {
+        background-color: #f1f5f9;
+        color: #334155;
+    }
+
+    .btn-learnly-danger {
+        background-color: transparent;
+        color: #ef4444;
+        font-weight: 600;
+        border: 1px solid #fee2e2;
+        border-radius: 8px;
+        padding: 0.5rem 1rem;
+        font-size: 0.85rem;
+        transition: all 0.2s ease;
+    }
+
+    .btn-learnly-danger:hover {
+        background-color: #fef2f2;
+        color: #dc2626;
+    }
+</style>
+
+<div class="container my-5">
+    
+    <div class="curriculum-header d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <span class="text-muted small uppercase font-weight-bold">Course Management</span>
+            <h2 class="learnly-title mb-0 mt-1">📚 Course Curriculum</h2>
+        </div>
+        <div>
+            <a asp-action="Create" asp-route-courseId="@ViewBag.CourseId" class="btn btn-learnly-purple">
+                Add New Section
+            </a>
+        </div>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="text-center py-5 curriculum-header">
+            <p class="text-muted mb-0">No sections added to this course yet. Get started by clicking "Add New Section".</p>
+        </div>
+    }
+    else
+    {
+        <div class="sections-list">
+            @foreach (var LessonSection in Model)
+            {
+                <div class="section-card shadow-sm">
+                    <div class="section-header-row">
+                        <div class="d-flex align-items-center">
+                            <span class="mr-3 text-muted"><i class="fas fa-bars"></i></span>
+                            <h5 class="section-name mb-0">@LessonSection.Title</h5>
+                        </div>
+                        
+                        <div class="d-flex gap-2" style="gap: 8px;">
+                            <a asp-controller="Lessons" asp-action="Create" asp-route-sectionId="@LessonSection.Id" class="btn btn-learnly-outline text-primary" style="border-color: rgba(124, 77, 255, 0.3);">
+                                Add Lesson
+                            </a>
+                            <a asp-action="Edit" asp-route-id="@LessonSection.Id" class="btn btn-learnly-outline">
+                                Edit
+                            </a>
+                            <a asp-action="Delete" asp-route-id="@LessonSection.Id" class="btn btn-learnly-danger">
+                                Delete
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

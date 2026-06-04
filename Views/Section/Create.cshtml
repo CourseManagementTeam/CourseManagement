@@ -1,0 +1,135 @@
+﻿@using CourseManagementSystem.ViewModels
+@model SectionViewModel
+
+@{
+    ViewData["Title"] = "Create Section";
+}
+
+<style>
+    :root {
+        --learnly-purple: #7c4dff;
+        --learnly-purple-hover: #6536ec;
+        --learnly-bg-light: #f8f9fa;
+        --learnly-text-dark: #1d1b4b;
+        --learnly-border: #e2e8f0;
+    }
+
+    body {
+        background-color: var(--learnly-bg-light);
+    }
+
+    .learnly-card {
+        border: 1px solid var(--learnly-border);
+        border-radius: 16px;
+        overflow: hidden;
+        background: #ffffff;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03) !important;
+    }
+
+    .learnly-card-header {
+        background: #ffffff;
+        border-bottom: 1px solid var(--learnly-border);
+        padding: 1.5rem;
+    }
+
+    .learnly-title {
+        color: var(--learnly-text-dark);
+        font-weight: 700;
+        font-size: 1.3rem;
+    }
+
+    .learnly-label {
+        color: var(--learnly-text-dark);
+        font-weight: 600;
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .learnly-input {
+        border: 1px solid var(--learnly-border);
+        border-radius: 8px;
+        padding: 0.65rem 1rem;
+        font-size: 0.95rem;
+        transition: all 0.2s ease-in-out;
+    }
+
+        .learnly-input:focus {
+            border-color: var(--learnly-purple);
+            box-shadow: 0 0 0 3px rgba(124, 77, 255, 0.15);
+            outline: none;
+        }
+
+    .btn-learnly-primary {
+        background-color: var(--learnly-purple);
+        color: #ffffff;
+        font-weight: 600;
+        border: none;
+        border-radius: 8px;
+        padding: 0.65rem 1.75rem;
+        transition: background-color 0.2s ease;
+    }
+
+        .btn-learnly-primary:hover {
+            background-color: var(--learnly-purple-hover);
+            color: #ffffff;
+        }
+
+    .btn-learnly-secondary {
+        background-color: transparent;
+        color: #64748b;
+        font-weight: 600;
+        border: 1px solid var(--learnly-border);
+        border-radius: 8px;
+        padding: 0.65rem 1.75rem;
+        transition: all 0.2s ease;
+    }
+
+        .btn-learnly-secondary:hover {
+            background-color: #f1f5f9;
+            color: #334155;
+        }
+</style>
+
+<div class="container my-5" style="min-height: 60vh;">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+
+            <div class="card learnly-card">
+
+                <div class="learnly-card-header text-center">
+                    <h4 class="mb-0 learnly-title">Create New Section</h4>
+                </div>
+
+                <div class="card-body p-4">
+                    <form asp-action="Create" method="post">
+
+                        <input type="hidden" asp-for="CourseId" />
+
+                        <div class="mb-4">
+                            <label asp-for="Title" class="form-label learnly-label">Section Name</label>
+                            <input asp-for="Title" class="form-control learnly-input" placeholder="Enter section name..." />
+                            <span asp-validation-for="Title" class="text-danger small"></span>
+                        </div>
+
+                        <div class="d-flex justify-content-between pt-2">
+
+                            <a asp-controller="Sections"
+                               asp-action="Index"
+                               asp-route-courseId="@ViewBag.CourseId"
+                               class="btn btn-learnly-secondary">
+                                ← Back
+                            </a>
+
+                            <button type="submit" class="btn btn-learnly-primary">
+                                Save Section
+                            </button>
+
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>

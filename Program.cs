@@ -2,25 +2,25 @@ using CourseManagementSystem.Data;
 using CourseManagementSystem.Models;
 using CourseManagementSystem.Repository;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 namespace CourseManagementSystem
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+                ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(connectionString));
-            builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-            //builder.Services.AddDefaultIdentity<IdentityUser>(options => 
-            //options.SignIn.RequireConfirmedAccount = true)
-            //    .AddEntityFrameworkStores<ApplicationDbContext>();
+            builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
           
             //price
@@ -34,13 +34,16 @@ namespace CourseManagementSystem
                 options.Password.RequireUppercase = false;
                 options.Password.RequireNonAlphanumeric = false;
             })
- .AddEntityFrameworkStores<ApplicationDbContext>()
- .AddDefaultTokenProviders();
-            //view
-            builder.Services.AddLocalization(options =>
+            .AddEntityFrameworkStores<ApplicationDbContext>()
+            .AddDefaultTokenProviders();
+
+            builder.Services.ConfigureApplicationCookie(options =>
             {
-                options.ResourcesPath = "Resources";
+                options.LoginPath = "/Account/Login";
+                options.LogoutPath = "/Account/Logout";
+                options.AccessDeniedPath = "/Account/AccessDenied";
             });
+<<<<<<< HEAD
             builder.Services
     .AddControllersWithViews()
     .AddViewLocalization();
@@ -53,6 +56,9 @@ namespace CourseManagementSystem
             builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
             builder.Services.AddScoped<IWishlistRepository, WishlistRepository>();
             builder.Services.AddScoped<ICartRepository, CartRepository>();
+=======
+
+>>>>>>> dev
             builder.Services.AddLocalization(options =>
             {
                 options.ResourcesPath = "Resources";
@@ -63,13 +69,40 @@ namespace CourseManagementSystem
                 .AddViewLocalization();
 
             builder.Services.AddRazorPages();
+
+            // Register Repositories
+            builder.Services.AddScoped<ICourseRepository, CourseRepository>();
+            builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+            builder.Services.AddScoped<ISectionRepository, SectionRepository>();
+            builder.Services.AddScoped<ILessonRepository, LessonRepository>();
+            builder.Services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
+            builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
+            builder.Services.AddScoped<IWishlistRepository, WishlistRepository>();
+
             var app = builder.Build();
 
+<<<<<<< HEAD
             using (var scope = app.Services.CreateScope())
             {
                 var services = scope.ServiceProvider;
                 //await SeedData.Initialize(services);
             }
+=======
+            // Seed Roles
+            using (var scope = app.Services.CreateScope())
+            {
+                var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+                foreach (var role in new[] { "Admin", "Instructor", "Student" })
+                {
+                    if (!await roleManager.RoleExistsAsync(role))
+                    {
+                        await roleManager.CreateAsync(new IdentityRole(role));
+                    }
+                }
+            }
+
+>>>>>>> dev
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
@@ -79,16 +112,19 @@ namespace CourseManagementSystem
             {
                 app.UseExceptionHandler("/Home/Error");
             }
+
             app.UseRouting();
 
             app.UseAuthentication();
             app.UseAuthorization();
+
             app.MapStaticAssets();
+
             var supportedCultures = new[]
-{
-    "en",
-    "ar"
-};
+            {
+                "en",
+                "ar"
+            };
 
             var localizationOptions = new RequestLocalizationOptions()
                 .SetDefaultCulture("en")
@@ -96,12 +132,14 @@ namespace CourseManagementSystem
                 .AddSupportedUICultures(supportedCultures);
 
             app.UseRequestLocalization(localizationOptions);
+
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}")
                 .WithStaticAssets();
+
             //app.MapRazorPages()
-            //   .WithStaticAssets();
+            //    .WithStaticAssets();
 
             app.Run();
         }
