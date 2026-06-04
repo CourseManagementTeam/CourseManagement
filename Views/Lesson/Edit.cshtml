@@ -1,0 +1,119 @@
+﻿@model CourseManagementSystem.ViewModels.LessonViewModel
+
+@{
+    ViewData["Title"] = "Edit Lesson";
+}
+
+<style>
+    :root {
+        --learnly-purple: #7c4dff;
+        --learnly-purple-hover: #6536ff;
+        --learnly-bg-light: #f8f9fa;
+        --learnly-text-dark: #1d1b4b;
+        --learnly-border: #e2e8f0;
+    }
+
+    body {
+        background-color: var(--learnly-bg-light);
+    }
+
+    .learnly-card {
+        border: 1px solid var(--learnly-border);
+        border-radius: 16px;
+        background: #ffffff;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    }
+
+    .form-label {
+        color: var(--learnly-text-dark);
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+
+    .form-control:focus {
+        border-color: var(--learnly-purple);
+        box-shadow: 0 0 0 3px rgba(124, 77, 255, 0.15);
+    }
+
+    .btn-learnly-primary {
+        background-color: var(--learnly-purple);
+        color: #ffffff;
+        font-weight: 600;
+        border: none;
+        border-radius: 8px;
+        padding: 0.65rem 1.5rem;
+        transition: background-color 0.2s ease;
+    }
+
+        .btn-learnly-primary:hover {
+            background-color: var(--learnly-purple-hover);
+            color: #ffffff;
+        }
+
+    .form-check-input:checked {
+        background-color: var(--learnly-purple);
+        border-color: var(--learnly-purple);
+    }
+</style>
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-7 col-lg-6">
+
+            <div class="card learnly-card p-4 p-md-5">
+                <div class="mb-4">
+                    <span class="text-uppercase text-muted fw-bold small" style="letter-spacing: 0.5px;">Curriculum Management</span>
+                    <h2 class="fw-bold text-dark mt-1">✏️ Edit Lesson Content</h2>
+                    <p class="text-muted small">Update your lesson titles, resource links, and access options.</p>
+                </div>
+
+                <form asp-action="Edit" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
+
+                    <input type="hidden" asp-for="Id" />
+                    <input type="hidden" asp-for="SectionId" />
+
+                    <div class="mb-3">
+                        <label asp-for="Title" class="form-label">Lesson Title</label>
+                        <input asp-for="Title" class="form-control form-control-lg fs-6" />
+                        <span asp-validation-for="Title" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="VideoUrl" class="form-label">Video URL</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-white border-end-0 text-muted"><i class="fab fa-youtube"></i></span>
+                            <input asp-for="VideoUrl" class="form-control border-start-0" placeholder="https://www.youtube.com/watch?v=..." />
+                        </div>
+                        <span asp-validation-for="VideoUrl" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-4 p-3 rounded-3" style="background-color: #f8fafc; border: 1px solid var(--learnly-border);">
+                        <div class="form-check form-switch m-0 d-flex align-items-center">
+                            <input class="form-check-input me-3" type="checkbox" role="switch" asp-for="IsFreePreview" style="width: 2.5em; height: 1.25em; cursor: pointer;">
+                            <div>
+                                <label class="form-check-label fw-semibold text-dark" asp-for="IsFreePreview" style="cursor: pointer;">Free Preview Lesson</label>
+                                <span class="d-block text-muted" style="font-size: 0.75rem;">Allow non-enrolled students to watch this lesson as a trial.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center pt-2">
+                        <a asp-action="Index" asp-route-sectionId="@Model.SectionId" class="text-secondary text-decoration-none small fw-semibold">
+                            <i class="fas fa-arrow-left me-1"></i> Cancel Changes
+                        </a>
+                        <button type="submit" class="btn btn-learnly-primary px-4">
+                            Save Changes
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
