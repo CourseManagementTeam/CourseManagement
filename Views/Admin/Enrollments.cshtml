@@ -1,0 +1,78 @@
+@model List<CourseManagementSystem.Models.Enrollment>
+
+@{
+    ViewData["Title"] = "Enrollments";
+}
+
+<div class="container py-5">
+    <div class="d-flex align-items-center gap-3 mb-4">
+        <a asp-controller="Admin" asp-action="Index" class="btn-outline-learnly">
+            <i class="bi bi-arrow-left me-1"></i>Back
+        </a>
+        <div>
+            <h2 class="fw-bold mb-0" style="color:var(--text);">
+                <i class="bi bi-mortarboard me-2" style="color:var(--primary);"></i>All Enrollments
+            </h2>
+            <p class="text-muted mb-0">@Model.Count total enrollments</p>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm" style="background:var(--card-bg);">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th class="ps-4" style="color:var(--text);">Student</th>
+                            <th style="color:var(--text);">Course</th>
+                            <th style="color:var(--text);">Enrolled</th>
+                            <th style="color:var(--text);">Progress</th>
+                            <th style="color:var(--text);">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var e in Model)
+                        {
+                            <tr>
+                                <td class="ps-4">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="avatar" style="width:32px;height:32px;font-size:.78rem;">
+                                            @(e.Student?.FullName?.Substring(0,1).ToUpper() ?? "?")
+                                        </div>
+                                        <div>
+                                            <div class="fw-semibold" style="color:var(--text); font-size:.9rem;">@e.Student?.FullName</div>
+                                            <div style="font-size:.78rem; color:#6b7280;">@e.Student?.Email</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <a asp-controller="Course" asp-action="Details" asp-route-id="@e.CourseId"
+                                       style="color:var(--primary); font-size:.9rem;">@e.Course?.Title</a>
+                                </td>
+                                <td class="text-muted" style="font-size:.85rem;">@e.EnrolledAt.ToString("MMM dd, yyyy")</td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="progress flex-grow-1" style="height:6px; max-width:80px;">
+                                            <div class="progress-bar bg-success" style="width:@e.ProgressPercentage%;"></div>
+                                        </div>
+                                        <span style="font-size:.8rem; color:#6b7280;">@e.ProgressPercentage%</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    @if (e.IsCompleted)
+                                    {
+                                        <span class="badge bg-success">Completed</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">In Progress</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

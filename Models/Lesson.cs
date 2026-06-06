@@ -23,6 +23,12 @@ namespace CourseManagementSystem.Models
         //********************** Navigation Properties ***********************
         public Section? Section { get; set; }
 
+        public string? VideoType { get; set; }
+
+        public string? UploadedVideoFileName { get; set; }
+
         public ICollection<LessonProgress>? LessonProgresses { get; set; }
+
+        public ICollection<Attachment>? Attachments { get; set; }
     }
 }

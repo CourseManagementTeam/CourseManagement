@@ -1,6 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+
 namespace CourseManagementSystem.Models
 {
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
@@ -24,7 +24,11 @@ namespace CourseManagementSystem.Models
 
         public DbSet<Wishlist> Wishlists { get; set; }
 
+        public DbSet<CartItem> CartItems { get; set; }
+
         public DbSet<LessonProgress> LessonProgresses { get; set; }
+
+        public DbSet<Attachment> Attachments { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

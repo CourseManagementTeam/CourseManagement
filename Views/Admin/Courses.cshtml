@@ -1,0 +1,93 @@
+@model List<CourseManagementSystem.Models.Course>
+
+@{
+    ViewData["Title"] = "Manage Courses";
+}
+
+<div class="container py-5">
+    <div class="d-flex align-items-center gap-3 mb-4">
+        <a asp-controller="Admin" asp-action="Index" class="btn-outline-learnly">
+            <i class="bi bi-arrow-left me-1"></i>Back
+        </a>
+        <div>
+            <h2 class="fw-bold mb-0" style="color:var(--text);">
+                <i class="bi bi-journal-bookmark me-2" style="color:var(--primary);"></i>All Courses
+            </h2>
+            <p class="text-muted mb-0">@Model.Count total courses</p>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm" style="background:var(--card-bg);">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th class="ps-4" style="width:35%; color:var(--text);">Title</th>
+                            <th style="color:var(--text);">Instructor</th>
+                            <th style="color:var(--text);">Category</th>
+                            <th style="color:var(--text);">Price</th>
+                            <th style="color:var(--text);">Students</th>
+                            <th style="color:var(--text);">Status</th>
+                            <th style="color:var(--text);">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var course in Model)
+                        {
+                            <tr>
+                                <td class="ps-4">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <img src="@(string.IsNullOrEmpty(course.ImageUrl) ? "/images/Courses/default.avif" : $"/images/Courses/{course.ImageUrl}")"
+                                             onerror="this.src='/images/Courses/default.avif'"
+                                             style="width:44px;height:30px;object-fit:cover;border-radius:6px;" />
+                                        <a asp-controller="Course" asp-action="Details" asp-route-id="@course.Id"
+                                           class="fw-semibold" style="color:var(--primary);">@course.Title</a>
+                                    </div>
+                                </td>
+                                <td class="text-muted">@(course.Instructor?.FullName ?? "—")</td>
+                                <td>
+                                    <span class="badge" style="background:var(--primary);font-weight:500;">
+                                        @(course.Category?.Name ?? "—")
+                                    </span>
+                                </td>
+                                <td style="color:var(--text);">@(course.Price == 0 ? "Free" : course.Price.ToString("C"))</td>
+                                <td style="color:var(--text);">@(course.Enrollments?.Count ?? 0)</td>
+                                <td>
+                                    @if (course.IsPublished)
+                                    {
+                                        <span class="badge bg-success">Published</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">Draft</span>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="d-flex gap-1">
+                                        <form asp-controller="Admin" asp-action="ToggleCourse" method="post">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="id" value="@course.Id" />
+                                            <button type="submit" class="btn btn-sm @(course.IsPublished ? "btn-outline-warning" : "btn-outline-success")"
+                                                    title="@(course.IsPublished ? "Unpublish" : "Publish")">
+                                                <i class="bi @(course.IsPublished ? "bi-eye-slash" : "bi-eye")"></i>
+                                            </button>
+                                        </form>
+                                        <form asp-controller="Admin" asp-action="DeleteCourse" method="post"
+                                              onsubmit="return confirm('Delete this course and all related data? This cannot be undone.');">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="id" value="@course.Id" />
+                                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

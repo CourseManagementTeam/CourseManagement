@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>1.3</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+
+  <data name="Nav.Home" xml:space="preserve"><value>Home</value></data>
+  <data name="Nav.Courses" xml:space="preserve"><value>Courses</value></data>
+  <data name="Nav.Categories" xml:space="preserve"><value>Categories</value></data>
+  <data name="Nav.Dashboard" xml:space="preserve"><value>Dashboard</value></data>
+  <data name="Nav.MyCourses" xml:space="preserve"><value>My Courses</value></data>
+  <data name="Nav.Wishlist" xml:space="preserve"><value>Wishlist</value></data>
+  <data name="Nav.Reviews" xml:space="preserve"><value>My Reviews</value></data>
+  <data name="Nav.Login" xml:space="preserve"><value>Log in</value></data>
+  <data name="Nav.Signup" xml:space="preserve"><value>Sign up</value></data>
+  <data name="Nav.Logout" xml:space="preserve"><value>Log out</value></data>
+  <data name="Nav.Profile" xml:space="preserve"><value>My Profile</value></data>
+  <data name="Nav.EditProfile" xml:space="preserve"><value>Edit Profile</value></data>
+  <data name="Nav.CreateCourse" xml:space="preserve"><value>+ New Course</value></data>
+  <data name="Nav.InstructorArea" xml:space="preserve"><value>My Courses</value></data>
+  <data name="Nav.ManageCategories" xml:space="preserve"><value>Manage Categories</value></data>
+  <data name="Nav.AllCourses" xml:space="preserve"><value>All Courses</value></data>
+
+  <data name="Footer.Learn" xml:space="preserve"><value>Learn</value></data>
+  <data name="Footer.Teach" xml:space="preserve"><value>Teach</value></data>
+  <data name="Footer.Account" xml:space="preserve"><value>Account</value></data>
+  <data name="Footer.AllCourses" xml:space="preserve"><value>All Courses</value></data>
+  <data name="Footer.Categories" xml:space="preserve"><value>Categories</value></data>
+  <data name="Footer.MyLearning" xml:space="preserve"><value>My Learning</value></data>
+  <data name="Footer.BecomeInstructor" xml:space="preserve"><value>Become an Instructor</value></data>
+  <data name="Footer.InstructorArea" xml:space="preserve"><value>Instructor Area</value></data>
+  <data name="Footer.CreateCourse" xml:space="preserve"><value>Create a Course</value></data>
+  <data name="Footer.MyProfile" xml:space="preserve"><value>My Profile</value></data>
+  <data name="Footer.SignUp" xml:space="preserve"><value>Sign Up Free</value></data>
+  <data name="Footer.LogIn" xml:space="preserve"><value>Log In</value></data>
+  <data name="Footer.Rights" xml:space="preserve"><value>All rights reserved.</value></data>
+  <data name="Footer.Tagline" xml:space="preserve"><value>Built for learners and instructors.</value></data>
+  <data name="Footer.Description" xml:space="preserve"><value>Learn new skills from industry experts. Anytime, anywhere.</value></data>
+
+  <data name="Btn.Search" xml:space="preserve"><value>Search</value></data>
+  <data name="Btn.ViewAll" xml:space="preserve"><value>View all</value></data>
+  <data name="Btn.ViewCourse" xml:space="preserve"><value>View Course</value></data>
+  <data name="Btn.Enroll" xml:space="preserve"><value>Enroll Now</value></data>
+  <data name="Btn.AddWishlist" xml:space="preserve"><value>Add to Wishlist</value></data>
+
+  <data name="Search.Placeholder" xml:space="preserve"><value>Search courses...</value></data>
+</root>

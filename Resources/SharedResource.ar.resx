@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>1.3</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+
+  <data name="Nav.Home" xml:space="preserve"><value>الرئيسية</value></data>
+  <data name="Nav.Courses" xml:space="preserve"><value>الدورات</value></data>
+  <data name="Nav.Categories" xml:space="preserve"><value>الفئات</value></data>
+  <data name="Nav.Dashboard" xml:space="preserve"><value>لوحة التحكم</value></data>
+  <data name="Nav.MyCourses" xml:space="preserve"><value>دوراتي</value></data>
+  <data name="Nav.Wishlist" xml:space="preserve"><value>المفضلة</value></data>
+  <data name="Nav.Reviews" xml:space="preserve"><value>تقييماتي</value></data>
+  <data name="Nav.Login" xml:space="preserve"><value>تسجيل الدخول</value></data>
+  <data name="Nav.Signup" xml:space="preserve"><value>إنشاء حساب</value></data>
+  <data name="Nav.Logout" xml:space="preserve"><value>تسجيل الخروج</value></data>
+  <data name="Nav.Profile" xml:space="preserve"><value>ملفي الشخصي</value></data>
+  <data name="Nav.EditProfile" xml:space="preserve"><value>تعديل الملف</value></data>
+  <data name="Nav.CreateCourse" xml:space="preserve"><value>+ دورة جديدة</value></data>
+  <data name="Nav.InstructorArea" xml:space="preserve"><value>دوراتي</value></data>
+  <data name="Nav.ManageCategories" xml:space="preserve"><value>إدارة الفئات</value></data>
+  <data name="Nav.AllCourses" xml:space="preserve"><value>جميع الدورات</value></data>
+
+  <data name="Footer.Learn" xml:space="preserve"><value>تعلّم</value></data>
+  <data name="Footer.Teach" xml:space="preserve"><value>درِّس</value></data>
+  <data name="Footer.Account" xml:space="preserve"><value>الحساب</value></data>
+  <data name="Footer.AllCourses" xml:space="preserve"><value>جميع الدورات</value></data>
+  <data name="Footer.Categories" xml:space="preserve"><value>الفئات</value></data>
+  <data name="Footer.MyLearning" xml:space="preserve"><value>تعلّمي</value></data>
+  <data name="Footer.BecomeInstructor" xml:space="preserve"><value>كن مدرّساً</value></data>
+  <data name="Footer.InstructorArea" xml:space="preserve"><value>منطقة المدرّس</value></data>
+  <data name="Footer.CreateCourse" xml:space="preserve"><value>إنشاء دورة</value></data>
+  <data name="Footer.MyProfile" xml:space="preserve"><value>ملفي الشخصي</value></data>
+  <data name="Footer.SignUp" xml:space="preserve"><value>التسجيل مجاناً</value></data>
+  <data name="Footer.LogIn" xml:space="preserve"><value>تسجيل الدخول</value></data>
+  <data name="Footer.Rights" xml:space="preserve"><value>جميع الحقوق محفوظة.</value></data>
+  <data name="Footer.Tagline" xml:space="preserve"><value>مبني للمتعلمين والمدرّسين.</value></data>
+  <data name="Footer.Description" xml:space="preserve"><value>تعلّم مهارات جديدة من خبراء الصناعة. في أي وقت وأي مكان.</value></data>
+
+  <data name="Btn.Search" xml:space="preserve"><value>بحث</value></data>
+  <data name="Btn.ViewAll" xml:space="preserve"><value>عرض الكل</value></data>
+  <data name="Btn.ViewCourse" xml:space="preserve"><value>عرض الدورة</value></data>
+  <data name="Btn.Enroll" xml:space="preserve"><value>الالتحاق الآن</value></data>
+  <data name="Btn.AddWishlist" xml:space="preserve"><value>أضف للمفضلة</value></data>
+
+  <data name="Search.Placeholder" xml:space="preserve"><value>ابحث عن دورات...</value></data>
+</root>

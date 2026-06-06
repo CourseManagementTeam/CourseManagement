@@ -1,0 +1,110 @@
+@{
+    ViewData["Title"] = "Access Denied";
+}
+
+@section Styles {
+    <style>
+        .denied-wrapper {
+            min-height: calc(100vh - 140px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem 1rem;
+        }
+
+        .denied-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 3rem 2.5rem;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            box-shadow: var(--shadow-elegant);
+        }
+
+        .denied-icon {
+            display: inline-grid;
+            place-items: center;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: rgba(239,68,68,.12);
+            font-size: 2.2rem;
+            color: #ef4444;
+            margin-bottom: 1.5rem;
+        }
+
+        .denied-title {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--text);
+            margin-bottom: .75rem;
+        }
+
+        .denied-msg {
+            color: var(--text-muted);
+            font-size: .95rem;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+
+        .btn-go-home {
+            display: inline-flex;
+            align-items: center;
+            gap: .5rem;
+            padding: .65rem 1.4rem;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: .92rem;
+            background: var(--gradient-primary);
+            color: #fff;
+            border: none;
+            text-decoration: none;
+            box-shadow: var(--shadow-elegant);
+            transition: all .15s;
+            margin: .25rem;
+        }
+
+        .btn-go-home:hover { opacity: .9; color: #fff; transform: translateY(-1px); }
+
+        .btn-go-back {
+            display: inline-flex;
+            align-items: center;
+            gap: .5rem;
+            padding: .65rem 1.4rem;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: .92rem;
+            background: var(--bg-soft);
+            color: var(--text);
+            border: 1px solid var(--border);
+            text-decoration: none;
+            transition: all .15s;
+            margin: .25rem;
+        }
+
+        .btn-go-back:hover { border-color: var(--primary); color: var(--primary); }
+    </style>
+}
+
+<div class="denied-wrapper">
+    <div class="denied-card">
+        <div class="denied-icon">
+            <i class="bi bi-shield-exclamation"></i>
+        </div>
+        <div class="denied-title">Access Denied</div>
+        <p class="denied-msg">
+            You don't have permission to view this page.
+            This section is restricted to specific roles (Student, Instructor, or Admin).
+        </p>
+        <div>
+            <a href="javascript:history.back()" class="btn-go-back">
+                <i class="bi bi-arrow-left"></i> Go Back
+            </a>
+            <a asp-controller="Home" asp-action="Index" class="btn-go-home">
+                <i class="bi bi-house"></i> Go Home
+            </a>
+        </div>
+    </div>
+</div>

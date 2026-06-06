@@ -1,0 +1,311 @@
+@model CourseManagementSystem.ViewModels.EditProfileViewModel
+@{
+    ViewData["Title"] = "Edit Profile";
+}
+
+@section Styles {
+    <style>
+        .edit-wrapper {
+            max-width: 700px;
+            margin: 2.5rem auto;
+            padding: 0 1rem 3rem;
+        }
+
+        .page-heading {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--text);
+            margin-bottom: .25rem;
+        }
+
+        .page-sub {
+            color: var(--text-muted);
+            font-size: .9rem;
+            margin-bottom: 2rem;
+        }
+
+        .section-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 1.75rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow-card);
+        }
+
+        .section-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 1.25rem;
+            padding-bottom: .65rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+        }
+
+        .form-label-learnly {
+            font-size: .85rem;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: .4rem;
+        }
+
+        .form-control-learnly {
+            background: var(--bg-soft);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text);
+            padding: .65rem 1rem;
+            font-size: .92rem;
+            transition: all .15s;
+            width: 100%;
+        }
+
+        .form-control-learnly:focus {
+            outline: none;
+            background: var(--card-bg);
+            border-color: var(--primary-glow);
+            box-shadow: 0 0 0 3px rgba(167,139,250,.2);
+            color: var(--text);
+        }
+
+        .form-control-learnly:disabled {
+            opacity: .6;
+            cursor: not-allowed;
+        }
+
+        .input-icon-wrap {
+            position: relative;
+        }
+
+        .input-icon-wrap .bi {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            pointer-events: none;
+        }
+
+        .input-icon-wrap .form-control-learnly {
+            padding-left: 2.4rem;
+        }
+
+        .avatar-placeholder {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: var(--gradient-primary);
+            display: grid;
+            place-items: center;
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #fff;
+            flex-shrink: 0;
+        }
+
+        .file-input-label {
+            display: inline-flex;
+            align-items: center;
+            gap: .5rem;
+            padding: .5rem 1rem;
+            border-radius: 10px;
+            border: 1px dashed var(--border);
+            color: var(--text-muted);
+            font-size: .88rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all .15s;
+            background: var(--bg-soft);
+        }
+
+        .file-input-label:hover { border-color: var(--primary); color: var(--primary); }
+
+        .field-error {
+            font-size: .8rem;
+            color: #ef4444;
+            margin-top: .3rem;
+            display: block;
+        }
+
+        .help-text {
+            font-size: .8rem;
+            color: var(--text-muted);
+            margin-top: .3rem;
+        }
+
+        .btn-save {
+            display: inline-flex;
+            align-items: center;
+            gap: .5rem;
+            padding: .7rem 1.75rem;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: .95rem;
+            background: var(--gradient-primary);
+            color: #fff;
+            border: none;
+            box-shadow: var(--shadow-elegant);
+            transition: all .15s;
+            cursor: pointer;
+        }
+
+        .btn-save:hover { opacity: .9; transform: translateY(-1px); }
+
+        .btn-cancel {
+            display: inline-flex;
+            align-items: center;
+            gap: .5rem;
+            padding: .7rem 1.25rem;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: .92rem;
+            background: var(--bg-soft);
+            color: var(--text);
+            border: 1px solid var(--border);
+            text-decoration: none;
+            transition: all .15s;
+        }
+
+        .btn-cancel:hover { border-color: var(--primary); color: var(--primary); }
+
+        .alert-auth {
+            background: rgba(239,68,68,.1);
+            border: 1px solid rgba(239,68,68,.25);
+            color: #ef4444;
+            border-radius: 10px;
+            padding: .75rem 1rem;
+            font-size: .88rem;
+            margin-bottom: 1.25rem;
+        }
+    </style>
+}
+
+<div class="edit-wrapper">
+    <div class="page-heading"><i class="bi bi-pencil-square me-2"></i>Edit Profile</div>
+    <div class="page-sub">Update your personal information and account settings.</div>
+
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert-auth">
+            <div asp-validation-summary="ModelOnly"></div>
+        </div>
+    }
+
+    <form asp-controller="Account" asp-action="EditProfile" method="post" enctype="multipart/form-data">
+        @Html.AntiForgeryToken()
+
+        <!-- Basic Info -->
+        <div class="section-card">
+            <div class="section-title"><i class="bi bi-person-circle"></i> Basic Information</div>
+
+            <div class="d-flex align-items-center gap-3 mb-4">
+                <div class="avatar-placeholder" id="avatarPlaceholder">
+                    @Model.FullName.Substring(0, 1).ToUpper()
+                </div>
+                <div>
+                    <label class="file-input-label" for="profileImageInput">
+                        <i class="bi bi-camera"></i> Change Photo
+                    </label>
+                    <input type="file" id="profileImageInput" name="ProfileImageFile"
+                           style="display:none;" accept=".jpg,.jpeg,.png,.webp" />
+                    <p class="help-text">JPG, JPEG, PNG or WEBP</p>
+                    <span asp-validation-for="ProfileImageFile" class="field-error"></span>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="FullName" class="form-label-learnly">Full Name</label>
+                <div class="input-icon-wrap">
+                    <i class="bi bi-person"></i>
+                    <input asp-for="FullName" class="form-control-learnly" placeholder="Your full name" />
+                </div>
+                <span asp-validation-for="FullName" class="field-error"></span>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label-learnly">Email Address</label>
+                <div class="input-icon-wrap">
+                    <i class="bi bi-envelope"></i>
+                    <input value="@Model.Email" class="form-control-learnly" disabled />
+                </div>
+                <p class="help-text">Email cannot be changed.</p>
+            </div>
+
+            <div class="mb-1">
+                <label asp-for="Bio" class="form-label-learnly">Bio</label>
+                <textarea asp-for="Bio" class="form-control-learnly" rows="3"
+                          placeholder="Write a short bio about yourself..."></textarea>
+                <span asp-validation-for="Bio" class="field-error"></span>
+            </div>
+        </div>
+
+        <!-- Change Password -->
+        <div class="section-card">
+            <div class="section-title">
+                <i class="bi bi-lock"></i> Change Password
+                <small style="font-weight:400;color:var(--text-muted)">(leave blank to keep current)</small>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="CurrentPassword" class="form-label-learnly">Current Password</label>
+                <div class="input-icon-wrap">
+                    <i class="bi bi-lock"></i>
+                    <input asp-for="CurrentPassword" class="form-control-learnly"
+                           placeholder="Enter current password" />
+                </div>
+                <span asp-validation-for="CurrentPassword" class="field-error"></span>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-6 mb-3">
+                    <label asp-for="NewPassword" class="form-label-learnly">New Password</label>
+                    <div class="input-icon-wrap">
+                        <i class="bi bi-key"></i>
+                        <input asp-for="NewPassword" class="form-control-learnly"
+                               placeholder="Min. 6 characters" />
+                    </div>
+                    <span asp-validation-for="NewPassword" class="field-error"></span>
+                </div>
+                <div class="col-sm-6 mb-3">
+                    <label asp-for="ConfirmNewPassword" class="form-label-learnly">Confirm New Password</label>
+                    <div class="input-icon-wrap">
+                        <i class="bi bi-key-fill"></i>
+                        <input asp-for="ConfirmNewPassword" class="form-control-learnly"
+                               placeholder="Repeat new password" />
+                    </div>
+                    <span asp-validation-for="ConfirmNewPassword" class="field-error"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex gap-3">
+            <button type="submit" class="btn-save">
+                <i class="bi bi-check-circle"></i> Save Changes
+            </button>
+            <a asp-controller="Account" asp-action="Profile" class="btn-cancel">
+                <i class="bi bi-x-circle"></i> Cancel
+            </a>
+        </div>
+
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.getElementById('profileImageInput').addEventListener('change', function () {
+            const file = this.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const placeholder = document.getElementById('avatarPlaceholder');
+                placeholder.innerHTML = `<img src="${e.target.result}"
+                    style="width:80px;height:80px;border-radius:50%;object-fit:cover;" />`;
+            };
+            reader.readAsDataURL(file);
+        });
+    </script>
+}

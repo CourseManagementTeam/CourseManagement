@@ -28,6 +28,34 @@ namespace CourseManagementSystem.Repository
                 .Include(c => c.Reviews)
                 .FirstOrDefault(c => c.Id == id);
         }
-    
+        public IEnumerable<Course> GetCoursesByInstructor(string instructorId)
+        {
+            return _context.Courses
+                .Include(c => c.Category)
+                .Where(c => c.InstructorId == instructorId)
+                .ToList();
+        }
+
+        public IEnumerable<Course> SearchCourses(string? search, int? categoryId)
+        {
+            var query = _context.Courses
+                .Include(c => c.Category)
+                .Include(c => c.Instructor)
+                .AsQueryable();
+
+            if (!string.IsNullOrEmpty(search))
+            {
+                query = query.Where(c =>
+                    c.Title.Contains(search) ||
+                    c.Description.Contains(search));
+            }
+
+            if (categoryId.HasValue)
+            {
+                query = query.Where(c => c.CategoryId == categoryId.Value);
+            }
+
+            return query.ToList();
+        }
     }
 }

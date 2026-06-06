@@ -1,0 +1,99 @@
+@model CourseManagementSystem.ViewModels.LessonViewModel
+
+@{
+    ViewData["Title"] = "New Lesson";
+}
+
+<div class="container py-5">
+    <div class="card border-0 shadow-sm mx-auto" style="max-width:780px; background:var(--card-bg);">
+        <div class="card-body p-4 p-md-5">
+
+            <h2 class="fw-bold mb-1" style="color:var(--text);">
+                <i class="bi bi-plus-circle me-2" style="color:var(--primary);"></i>New Lesson
+            </h2>
+            <p class="text-muted mb-4" style="font-size:.9rem;">Add a lesson to this section.</p>
+
+            <form asp-action="Create" method="post" enctype="multipart/form-data">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="SectionId" />
+
+                <div class="mb-3">
+                    <label asp-for="Title" class="form-label fw-semibold" style="color:var(--text);">Lesson Title</label>
+                    <input asp-for="Title" class="form-control" placeholder="e.g. Introduction to Variables" />
+                    <span asp-validation-for="Title" class="text-danger" style="font-size:.83rem;"></span>
+                </div>
+
+                <div class="row g-3 mb-4">
+                    <div class="col-sm-6">
+                        <label asp-for="DurationMinutes" class="form-label fw-semibold" style="color:var(--text);">Duration (minutes)</label>
+                        <input asp-for="DurationMinutes" type="number" min="0" class="form-control" />
+                    </div>
+                    <div class="col-sm-6 d-flex align-items-end pb-2">
+                        <div class="form-check form-switch">
+                            <input asp-for="IsFreePreview" class="form-check-input" type="checkbox" role="switch" />
+                            <label asp-for="IsFreePreview" class="form-check-label" style="color:var(--text);">Free Preview</label>
+                            <div class="form-text">Allow non-enrolled students to access this lesson.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-4 p-4 rounded-3" style="background:var(--bg); border:1px solid var(--border);">
+                    <h6 class="fw-semibold mb-3" style="color:var(--text);">
+                        <i class="bi bi-camera-video me-2" style="color:var(--primary);"></i>Lesson Video
+                    </h6>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold" style="color:var(--text);">Video Type</label>
+                        <select asp-for="VideoType" class="form-select" id="videoTypeSelect">
+                            <option value="">No video</option>
+                            <option value="youtube">YouTube URL</option>
+                            <option value="upload">Upload Video File</option>
+                        </select>
+                    </div>
+                    <div id="youtubePanel" class="d-none">
+                        <label asp-for="VideoUrl" class="form-label fw-semibold" style="color:var(--text);">YouTube URL</label>
+                        <input asp-for="VideoUrl" class="form-control" placeholder="https://www.youtube.com/watch?v=..." />
+                        <span asp-validation-for="VideoUrl" class="text-danger" style="font-size:.83rem;"></span>
+                    </div>
+                    <div id="uploadPanel" class="d-none">
+                        <label asp-for="VideoFile" class="form-label fw-semibold" style="color:var(--text);">Video File</label>
+                        <input asp-for="VideoFile" type="file" class="form-control" accept=".mp4,.webm,.mov,.mkv" />
+                        <div class="form-text">Accepted: MP4, WebM, MOV, MKV</div>
+                    </div>
+                </div>
+
+                <div class="mb-4 p-4 rounded-3" style="background:var(--bg); border:1px solid var(--border);">
+                    <h6 class="fw-semibold mb-3" style="color:var(--text);">
+                        <i class="bi bi-paperclip me-2" style="color:var(--primary);"></i>Lesson Resources
+                    </h6>
+                    <input name="AttachmentFiles" type="file" class="form-control" multiple
+                           accept=".pdf,.docx,.pptx,.zip" />
+                    <div class="form-text">Accepted: PDF, DOCX, PPTX, ZIP &middot; Multiple files allowed</div>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary px-4">
+                        <i class="bi bi-check-lg me-1"></i>Create Lesson
+                    </button>
+                    <a asp-action="Index" asp-route-sectionId="@Model.SectionId" class="btn btn-outline-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        (function () {
+            const sel = document.getElementById('videoTypeSelect');
+            const yt  = document.getElementById('youtubePanel');
+            const up  = document.getElementById('uploadPanel');
+            function toggle() {
+                yt.classList.toggle('d-none', sel.value !== 'youtube');
+                up.classList.toggle('d-none', sel.value !== 'upload');
+            }
+            sel.addEventListener('change', toggle);
+            toggle();
+        })();
+    </script>
+}

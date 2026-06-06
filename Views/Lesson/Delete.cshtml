@@ -1,0 +1,111 @@
+﻿@model CourseManagementSystem.Models.Lesson
+
+@{
+    ViewData["Title"] = "Delete Lesson";
+}
+
+<style>
+    :root {
+        --learnly-danger: #ef4444;
+        --learnly-danger-hover: #dc2626;
+        --learnly-bg-light: #f8f9fa;
+        --learnly-text-dark: #1d1b4b;
+        --learnly-border: #e2e8f0;
+    }
+
+    body {
+        background-color: var(--learnly-bg-light);
+    }
+
+    .learnly-card {
+        border: 1px solid var(--learnly-border);
+        border-radius: 16px;
+        background: #ffffff;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    }
+
+    .danger-icon-box {
+        width: 64px;
+        height: 64px;
+        background-color: #fef2f2;
+        color: var(--learnly-danger);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.75rem;
+        margin: 0 auto 1.5rem;
+    }
+
+    .btn-learnly-danger {
+        background-color: var(--learnly-danger);
+        color: #ffffff;
+        font-weight: 600;
+        border: none;
+        border-radius: 8px;
+        padding: 0.65rem 1.75rem;
+        transition: background-color 0.2s ease;
+    }
+
+        .btn-learnly-danger:hover {
+            background-color: var(--learnly-danger-hover);
+            color: #ffffff;
+        }
+
+    .btn-learnly-secondary {
+        background-color: transparent;
+        color: #64748b;
+        font-weight: 600;
+        border: 1px solid var(--learnly-border);
+        border-radius: 8px;
+        padding: 0.65rem 1.75rem;
+        transition: all 0.2s ease;
+    }
+
+        .btn-learnly-secondary:hover {
+            background-color: #f1f5f9;
+            color: #334155;
+        }
+</style>
+
+<div class="container my-5">
+    <div class="row justify-content-center align-items-center" style="min-height: 60vh;">
+        <div class="col-md-6 col-lg-5">
+
+            <div class="card learnly-card p-4 text-center">
+
+                <div class="danger-icon-box">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+
+                <h3 class="fw-bold mb-2" style="color: var(--learnly-text-dark);">Are you sure?</h3>
+                <p class="text-muted mb-4">You are about to delete this lesson. This action cannot be undone.</p>
+
+                <div class="p-3 mb-4 rounded-3 text-start" style="background-color: #f8fafc; border: 1px solid var(--learnly-border);">
+                    <small class="text-uppercase fw-bold text-muted d-block mb-1" style="font-size: 0.75rem; letter-spacing: 0.5px;">Lesson Title</small>
+                    <span class="fw-semibold text-dark fs-5">@Model.Title</span>
+                </div>
+
+                <form asp-action="Delete" method="post">
+
+                    <input type="hidden" asp-for="Id" />
+
+                    <div class="d-flex justify-content-between">
+                        <a asp-action="Index"
+                           asp-route-sectionId="@Model.SectionId"
+                           class="btn btn-learnly-secondary">
+                            No, Cancel
+                        </a>
+
+                        <button type="submit" class="btn btn-learnly-danger">
+                            Yes, Delete It
+                        </button>
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+    </div>
+</div>
