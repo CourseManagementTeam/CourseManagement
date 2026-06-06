@@ -56,7 +56,7 @@ namespace CourseManagementSystem.Controllers
 
                 return RedirectToAction(
                     "Details",
-                    "Courses",
+                    "Course",
                     new { id = courseId });
             }
 
@@ -107,24 +107,32 @@ namespace CourseManagementSystem.Controllers
 
             Review review = new()
             {
-                CourseId = vm.CourseId,
+                CourseId  = vm.CourseId,
                 StudentId = userId,
-                Comment = vm.Comment,
-                Rate = vm.Rating,
+                Comment   = vm.Comment,
+                Rate      = vm.Rating,
                 CreatedAt = DateTime.Now
             };
 
             context.Reviews.Add(review);
-
             await context.SaveChangesAsync();
 
-            TempData["Success"] =
-                "Review added successfully.";
+            var course = await context.Courses.FindAsync(vm.CourseId);
+            if (course != null)
+            {
+                var allRates = await context.Reviews
+                    .Where(r => r.CourseId == vm.CourseId)
+                    .Select(r => r.Rate)
+                    .ToListAsync();
 
-            return RedirectToAction(
-                "Details",
-                "Courses",
-                new { id = vm.CourseId });
+                course.ReviewsCount  = allRates.Count;
+                course.AverageRating = allRates.Any() ? Math.Round(allRates.Average(), 1) : 0;
+                await context.SaveChangesAsync();
+            }
+
+            TempData["Success"] = "Your review has been submitted!";
+
+            return RedirectToAction("Details", "Course", new { id = vm.CourseId });
         }
 
         public async Task<IActionResult> MyReviews()

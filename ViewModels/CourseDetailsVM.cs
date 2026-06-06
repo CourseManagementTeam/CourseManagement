@@ -23,5 +23,11 @@
         public int SectionsCount { get; set; }
 
         public int LessonsCount { get; set; }
+
+        public bool IsEnrolled { get; set; }
+
+        public bool IsInWishlist { get; set; }
+
+        public bool IsInCart { get; set; }
     }
 }

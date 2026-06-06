@@ -1,6 +1,17 @@
-﻿@{
-    var adminName = User?.Identity?.Name ?? "Admin";
+﻿@inject Microsoft.AspNetCore.Identity.UserManager<CourseManagementSystem.Models.ApplicationUser> _um
+@inject Microsoft.AspNetCore.Identity.SignInManager<CourseManagementSystem.Models.ApplicationUser> _sm
+@{
     var currentController = ViewContext.RouteData.Values["controller"]?.ToString()?.ToLower() ?? "";
+    var currentAction    = ViewContext.RouteData.Values["action"]?.ToString()?.ToLower() ?? "";
+    CourseManagementSystem.Models.ApplicationUser? adminUser = null;
+    string adminName = "Admin";
+    string adminInitial = "A";
+    if (_sm.IsSignedIn(User))
+    {
+        adminUser = await _um.GetUserAsync(User);
+        adminName = adminUser?.FullName ?? User.Identity?.Name ?? "Admin";
+        adminInitial = adminName.Length > 0 ? adminName.Substring(0, 1).ToUpper() : "A";
+    }
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -22,6 +33,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 
     <style>
             :root,
@@ -451,30 +463,54 @@
 
             <div class="sidebar-section">Main</div>
             <ul class="sidebar-nav">
-                <li><a href="/Admin" class="@(currentController == "admin" ? "active" : "")"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
-                <li><a href="/AdminCourses" class="@(currentController == "admincourses" ? "active" : "")"><i class="bi bi-journal-bookmark"></i> Courses</a></li>
-                <li><a href="/AdminCategories" class="@(currentController == "admincategories" ? "active" : "")"><i class="bi bi-grid-1x2"></i> Categories</a></li>
-                <li><a href="/AdminSections" class="@(currentController == "adminsections" ? "active" : "")"><i class="bi bi-list-ul"></i> Sections</a></li>
-                <li><a href="/AdminLessons" class="@(currentController == "adminlessons" ? "active" : "")"><i class="bi bi-play-circle"></i> Lessons</a></li>
+                <li>
+                    <a asp-controller="Admin" asp-action="Index"
+                       class="@(currentController == "admin" && currentAction == "index" ? "active" : "")">
+                        <i class="bi bi-speedometer2"></i> Dashboard
+                    </a>
+                </li>
+                <li>
+                    <a asp-controller="Admin" asp-action="Courses"
+                       class="@(currentController == "admin" && currentAction == "courses" ? "active" : "")">
+                        <i class="bi bi-journal-bookmark"></i> Courses
+                    </a>
+                </li>
+                <li>
+                    <a asp-controller="Category" asp-action="Index"
+                       class="@(currentController == "category" ? "active" : "")">
+                        <i class="bi bi-grid-1x2"></i> Categories
+                    </a>
+                </li>
             </ul>
 
             <div class="sidebar-section">People</div>
             <ul class="sidebar-nav">
-                <li><a href="/AdminUsers" class="@(currentController == "adminusers" ? "active" : "")"><i class="bi bi-people"></i> Users</a></li>
-                <li><a href="/AdminInstructors" class="@(currentController == "admininstructors" ? "active" : "")"><i class="bi bi-easel"></i> Instructors</a></li>
-                <li><a href="/AdminEnrollments" class="@(currentController == "adminenrollments" ? "active" : "")"><i class="bi bi-mortarboard"></i> Enrollments</a></li>
+                <li>
+                    <a asp-controller="Admin" asp-action="Users"
+                       class="@(currentController == "admin" && currentAction == "users" ? "active" : "")">
+                        <i class="bi bi-people"></i> Users
+                    </a>
+                </li>
+                <li>
+                    <a asp-controller="Admin" asp-action="Enrollments"
+                       class="@(currentController == "admin" && currentAction == "enrollments" ? "active" : "")">
+                        <i class="bi bi-mortarboard"></i> Enrollments
+                    </a>
+                </li>
             </ul>
 
             <div class="sidebar-section">Engagement</div>
             <ul class="sidebar-nav">
-                <li><a href="/AdminReviews" class="@(currentController == "adminreviews" ? "active" : "")"><i class="bi bi-star"></i> Reviews</a></li>
-                <li><a href="/AdminProgress" class="@(currentController == "adminprogress" ? "active" : "")"><i class="bi bi-bar-chart"></i> Lesson Progress</a></li>
-                <li><a href="/AdminWishlists" class="@(currentController == "adminwishlists" ? "active" : "")"><i class="bi bi-heart"></i> Wishlists</a></li>
+                <li>
+                    <a asp-controller="Admin" asp-action="Reviews"
+                       class="@(currentController == "admin" && currentAction == "reviews" ? "active" : "")">
+                        <i class="bi bi-star"></i> Reviews
+                    </a>
+                </li>
             </ul>
 
             <div class="sidebar-section">System</div>
             <ul class="sidebar-nav">
-                <li><a href="/AdminSettings" class="@(currentController == "adminsettings" ? "active" : "")"><i class="bi bi-gear"></i> Settings</a></li>
                 <li><a href="/"><i class="bi bi-box-arrow-left"></i> Back to Site</a></li>
             </ul>
 

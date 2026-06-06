@@ -45,7 +45,7 @@ namespace CourseManagementSystem.Controllers
 
                 return RedirectToAction(
                     "Details",
-                    "Courses",
+                    "Course",
                     new { id = courseId });
             }
 

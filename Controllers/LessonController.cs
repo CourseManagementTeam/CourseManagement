@@ -1,140 +1,278 @@
-﻿using CourseManagementSystem.Models;
+using CourseManagementSystem.Models;
+using CourseManagementSystem.Repository;
 using CourseManagementSystem.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace CourseManagementSystem.Controllers
 {
     public class LessonController : Controller
     {
         private readonly ILessonRepository _lessonRepository;
+        private readonly ApplicationDbContext _context;
+        private readonly IWebHostEnvironment _env;
 
-        public LessonController(ILessonRepository lessonRepository)
+        private static readonly string[] AllowedVideoExts       = [".mp4", ".webm", ".mov", ".mkv"];
+        private static readonly string[] AllowedAttachmentExts  = [".pdf", ".docx", ".pptx", ".zip"];
+
+        public LessonController(ILessonRepository lessonRepository, ApplicationDbContext context, IWebHostEnvironment env)
         {
             _lessonRepository = lessonRepository;
+            _context          = context;
+            _env              = env;
         }
 
-        // GET: Lesson/Index?sectionId=1
+        private bool OwnsParentSection(int sectionId)
+        {
+            if (User.IsInRole("Admin")) return true;
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            return _context.Sections
+                .Include(s => s.Course)
+                .Any(s => s.Id == sectionId && s.Course!.InstructorId == userId);
+        }
+
         [HttpGet]
+        [Authorize]
         public IActionResult Index(int sectionId)
         {
             ViewBag.SectionId = sectionId;
-
             var lessons = _lessonRepository.GetLessonsBySectionId(sectionId);
             return View(lessons);
         }
 
-        // GET: Lesson/Create?sectionId=1
         [HttpGet]
+        [Authorize(Roles = "Instructor,Admin")]
         public IActionResult Create(int sectionId)
         {
-            var vm = new LessonViewModel
-            {
-                SectionId = sectionId
-            };
-            return View(vm);
+            if (!OwnsParentSection(sectionId)) return Forbid();
+            return View(new LessonViewModel { SectionId = sectionId });
         }
 
-        // POST: Lesson/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(LessonViewModel vm)
+        [Authorize(Roles = "Instructor,Admin")]
+        public async Task<IActionResult> Create(LessonViewModel vm)
         {
-            if (!ModelState.IsValid)
-                return View(vm);
+            if (!OwnsParentSection(vm.SectionId)) return Forbid();
 
-            try
+            ModelState.Remove("VideoUrl");
+            if (!ModelState.IsValid) return View(vm);
+
+            var lesson = new Lesson
             {
-                var newLesson = new Lesson
-                {
-                    Title = vm.Title,
-                    SectionId = vm.SectionId,
-                    VideoUrl = vm.VideoUrl,
-                    IsFreePreview = vm.IsFreePreview 
-                };
+                Title           = vm.Title,
+                SectionId       = vm.SectionId,
+                IsFreePreview   = vm.IsFreePreview,
+                DurationMinutes = vm.DurationMinutes
+            };
 
-                _lessonRepository.Add(newLesson);
-                _lessonRepository.Save();
+            ApplyVideo(vm, lesson, null);
 
-                return RedirectToAction(nameof(Index), new { sectionId = vm.SectionId });
-            }
-            catch (DbUpdateException)
-            {
-                ModelState.AddModelError(string.Empty, "Unable to save. The parent section could not be found.");
-                return View(vm);
-            }
+            _lessonRepository.Add(lesson);
+            _lessonRepository.Save();
+
+            await SaveAttachmentsAsync(vm.AttachmentFiles, lesson.Id);
+
+            TempData["Success"] = "Lesson created.";
+            return RedirectToAction(nameof(Index), new { sectionId = vm.SectionId });
         }
 
-        // GET: Lesson/Edit/5
         [HttpGet]
-        public IActionResult Edit(int id)
+        [Authorize(Roles = "Instructor,Admin")]
+        public async Task<IActionResult> Edit(int id)
         {
-            var lesson = _lessonRepository.GetById(id);
+            var lesson = await _context.Lessons
+                .Include(l => l.Attachments)
+                .FirstOrDefaultAsync(l => l.Id == id);
 
-            if (lesson == null)
-                return NotFound();
+            if (lesson == null) return NotFound();
+            if (!OwnsParentSection(lesson.SectionId)) return Forbid();
 
             var vm = new LessonViewModel
             {
-                Id = lesson.Id,
-                Title = lesson.Title,
-                SectionId = lesson.SectionId
+                Id                    = lesson.Id,
+                Title                 = lesson.Title,
+                SectionId             = lesson.SectionId,
+                VideoType             = lesson.VideoType,
+                VideoUrl              = lesson.VideoUrl,
+                ExistingVideoFileName = lesson.UploadedVideoFileName,
+                DurationMinutes       = lesson.DurationMinutes,
+                IsFreePreview         = lesson.IsFreePreview,
+                ExistingAttachments   = lesson.Attachments?.Select(a => new AttachmentVM
+                {
+                    Id       = a.Id,
+                    FileName = a.FileName,
+                    FileType = a.FileType,
+                    FileSize = a.FileSize
+                }).ToList() ?? new()
             };
 
             return View(vm);
         }
 
-        // Lesson/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(int id, LessonViewModel vm)
+        [Authorize(Roles = "Instructor,Admin")]
+        public async Task<IActionResult> Edit(int id, LessonViewModel vm)
         {
+            var lesson = await _context.Lessons
+                .Include(l => l.Attachments)
+                .FirstOrDefaultAsync(l => l.Id == id);
+
+            if (lesson == null) return NotFound();
+            if (!OwnsParentSection(lesson.SectionId)) return Forbid();
+
+            ModelState.Remove("VideoUrl");
             if (!ModelState.IsValid)
+            {
+                vm.ExistingAttachments = lesson.Attachments?.Select(a => new AttachmentVM
+                {
+                    Id = a.Id, FileName = a.FileName, FileType = a.FileType, FileSize = a.FileSize
+                }).ToList() ?? new();
                 return View(vm);
+            }
 
-            var lesson = _lessonRepository.GetById(id);
+            lesson.Title           = vm.Title;
+            lesson.IsFreePreview   = vm.IsFreePreview;
+            lesson.DurationMinutes = vm.DurationMinutes;
 
-            if (lesson == null)
-                return NotFound();
-
-            lesson.Title = vm.Title;
-            lesson.VideoUrl = vm.VideoUrl;
-            lesson.IsFreePreview = vm.IsFreePreview;
+            ApplyVideo(vm, lesson, lesson.UploadedVideoFileName);
 
             _lessonRepository.Update(lesson);
             _lessonRepository.Save();
 
+            await SaveAttachmentsAsync(vm.AttachmentFiles, lesson.Id);
+
+            TempData["Success"] = "Lesson updated.";
             return RedirectToAction(nameof(Index), new { sectionId = lesson.SectionId });
         }
 
-        // GET: Lesson/Delete/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Instructor,Admin")]
+        public async Task<IActionResult> DeleteAttachment(int attachmentId, int lessonId)
+        {
+            var attachment = await _context.Attachments.FindAsync(attachmentId);
+            if (attachment != null)
+            {
+                DeleteFile(Path.Combine("uploads", "attachments", attachment.StoredFileName));
+                _context.Attachments.Remove(attachment);
+                await _context.SaveChangesAsync();
+                TempData["Success"] = "Attachment deleted.";
+            }
+            return RedirectToAction(nameof(Edit), new { id = lessonId });
+        }
+
         [HttpGet]
+        [Authorize(Roles = "Instructor,Admin")]
         public IActionResult Delete(int id)
         {
             var lesson = _lessonRepository.GetById(id);
-
-            if (lesson == null)
-                return NotFound();
-
-            return View(lesson); 
+            if (lesson == null) return NotFound();
+            if (!OwnsParentSection(lesson.SectionId)) return Forbid();
+            return View(lesson);
         }
 
-        // POST: Lesson/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Delete(int id, Lesson lessonFromForm)
+        [Authorize(Roles = "Instructor,Admin")]
+        public async Task<IActionResult> Delete(int id, Lesson lessonFromForm)
         {
-            var lesson = _lessonRepository.GetById(id);
+            var lesson = await _context.Lessons
+                .Include(l => l.Attachments)
+                .FirstOrDefaultAsync(l => l.Id == id);
 
-            if (lesson == null)
-                return NotFound();
+            if (lesson == null) return NotFound();
+            if (!OwnsParentSection(lesson.SectionId)) return Forbid();
 
-            int savedSectionId = lesson.SectionId; 
+            if (!string.IsNullOrEmpty(lesson.UploadedVideoFileName))
+                DeleteFile(Path.Combine("uploads", "videos", lesson.UploadedVideoFileName));
 
+            foreach (var att in lesson.Attachments ?? [])
+                DeleteFile(Path.Combine("uploads", "attachments", att.StoredFileName));
+
+            int sectionId = lesson.SectionId;
             _lessonRepository.Delete(id);
             _lessonRepository.Save();
 
-            return RedirectToAction(nameof(Index), new { sectionId = savedSectionId });
+            TempData["Success"] = "Lesson deleted.";
+            return RedirectToAction(nameof(Index), new { sectionId });
+        }
+
+        // ── Helpers ────────────────────────────────────────────────────
+
+        private void ApplyVideo(LessonViewModel vm, Lesson lesson, string? oldVideoFile)
+        {
+            if (vm.VideoType == "youtube" && !string.IsNullOrEmpty(vm.VideoUrl))
+            {
+                if (!string.IsNullOrEmpty(oldVideoFile))
+                    DeleteFile(Path.Combine("uploads", "videos", oldVideoFile));
+                lesson.VideoType             = "youtube";
+                lesson.VideoUrl              = vm.VideoUrl;
+                lesson.UploadedVideoFileName = null;
+            }
+            else if (vm.VideoType == "upload" && vm.VideoFile is { Length: > 0 })
+            {
+                var ext = Path.GetExtension(vm.VideoFile.FileName).ToLowerInvariant();
+                if (AllowedVideoExts.Contains(ext))
+                {
+                    if (!string.IsNullOrEmpty(oldVideoFile))
+                        DeleteFile(Path.Combine("uploads", "videos", oldVideoFile));
+                    var stored = $"{Guid.NewGuid()}{ext}";
+                    SaveFile(vm.VideoFile, Path.Combine("uploads", "videos", stored));
+                    lesson.VideoType             = "upload";
+                    lesson.VideoUrl              = null;
+                    lesson.UploadedVideoFileName = stored;
+                }
+            }
+            else if (vm.VideoType == "none" || string.IsNullOrEmpty(vm.VideoType))
+            {
+                if (!string.IsNullOrEmpty(oldVideoFile))
+                    DeleteFile(Path.Combine("uploads", "videos", oldVideoFile));
+                lesson.VideoType             = null;
+                lesson.VideoUrl              = null;
+                lesson.UploadedVideoFileName = null;
+            }
+        }
+
+        private async Task SaveAttachmentsAsync(List<IFormFile> files, int lessonId)
+        {
+            foreach (var file in files.Where(f => f.Length > 0))
+            {
+                var ext = Path.GetExtension(file.FileName).ToLowerInvariant().TrimStart('.');
+                if (!AllowedAttachmentExts.Contains("." + ext)) continue;
+
+                var stored = $"{Guid.NewGuid()}.{ext}";
+                SaveFile(file, Path.Combine("uploads", "attachments", stored));
+
+                _context.Attachments.Add(new Attachment
+                {
+                    LessonId       = lessonId,
+                    FileName       = Path.GetFileName(file.FileName),
+                    StoredFileName = stored,
+                    FileType       = ext,
+                    FileSize       = file.Length,
+                    UploadedAt     = DateTime.UtcNow
+                });
+            }
+            await _context.SaveChangesAsync();
+        }
+
+        private void SaveFile(IFormFile file, string relativePath)
+        {
+            var fullPath = Path.Combine(_env.WebRootPath, relativePath);
+            Directory.CreateDirectory(Path.GetDirectoryName(fullPath)!);
+            using var stream = new FileStream(fullPath, FileMode.Create);
+            file.CopyTo(stream);
+        }
+
+        private void DeleteFile(string relativePath)
+        {
+            var fullPath = Path.Combine(_env.WebRootPath, relativePath);
+            if (System.IO.File.Exists(fullPath))
+                System.IO.File.Delete(fullPath);
         }
     }
 }

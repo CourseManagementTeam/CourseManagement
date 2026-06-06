@@ -4,6 +4,7 @@ using CourseManagementSystem.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 namespace CourseManagementSystem.Controllers
@@ -56,7 +57,7 @@ namespace CourseManagementSystem.Controllers
         }
 
         // 2. كورسات الـ Instructor الحالي فقط (مطلوبة بالتكليف)
-        //[Authorize]
+        [Authorize(Roles = "Instructor")]
         public IActionResult InstructorCourses()
         {
             // بمجرد تفعيل اللوجن، السطر القادم سيسحب الـ ID الحقيقي للمستخدم الحالي
@@ -66,34 +67,119 @@ namespace CourseManagementSystem.Controllers
             return View(courses);
         }
 
-        // 3. تفاصيل الكورس بالتصميم الفخم
-        public IActionResult Details(int id)
+        // 3. تفاصيل الكورس - Full LMS page
+        public async Task<IActionResult> Details(int id)
         {
-            var course = _courseRepository.GetCourseDetails(id);
+            var course = await _context.Courses
+                .Include(c => c.Category)
+                .Include(c => c.Instructor)
+                .Include(c => c.Enrollments)
+                .Include(c => c.Reviews)!.ThenInclude(r => r.Student)
+                .Include(c => c.Sections!.OrderBy(s => s.OrderNumber))
+                    .ThenInclude(s => s.Lessons!.OrderBy(l => l.OrderNumber))
+                        .ThenInclude(l => l.Attachments)
+                .FirstOrDefaultAsync(c => c.Id == id);
 
-            if (course == null)
-                return NotFound();
+            if (course == null) return NotFound();
 
-            var vm = new CourseDetailsVM
+            var instructorStudentCount = await _context.Enrollments
+                .Where(e => e.Course!.InstructorId == course.InstructorId)
+                .Select(e => e.StudentId)
+                .Distinct()
+                .CountAsync();
+
+            var instructorCourseCount = await _context.Courses
+                .CountAsync(c => c.InstructorId == course.InstructorId);
+
+            var relatedCourses = await _context.Courses
+                .Include(c => c.Instructor)
+                .Where(c => c.CategoryId == course.CategoryId && c.Id != id && c.IsPublished)
+                .OrderByDescending(c => c.AverageRating)
+                .Take(4)
+                .ToListAsync();
+
+            var vm = new CourseDetailsFullVM
             {
-                Id = course.Id,
-                Title = course.Title,
-                Description = course.Description,
-                Price = course.Price,
-                ImageUrl = course.ImageUrl,
-                CategoryName = course.Category?.Name,
-                InstructorName = course.Instructor?.FullName ?? "Expert Instructor",
-                AverageRating = course.AverageRating,
-                ReviewsCount = course.ReviewsCount,
-                SectionsCount = course.Sections?.Count ?? 0,
-                LessonsCount = course.Sections?.Sum(s => s.Lessons?.Count ?? 0) ?? 0
+                Id               = course.Id,
+                Title            = course.Title,
+                Description      = course.Description,
+                WhatYouWillLearn = course.WhatYouWillLearn,
+                Price            = course.Price,
+                ImageUrl         = course.ImageUrl,
+                Level            = course.Level,
+                TotalHours       = course.TotalHours,
+                AverageRating    = course.AverageRating,
+                ReviewsCount     = course.ReviewsCount,
+                StudentCount     = course.Enrollments?.Count ?? 0,
+                CategoryName     = course.Category?.Name,
+                CategoryId       = course.CategoryId,
+                Instructor       = new InstructorVM
+                {
+                    Id            = course.InstructorId,
+                    FullName      = course.Instructor?.FullName ?? "Expert Instructor",
+                    Bio           = course.Instructor?.Bio,
+                    ProfileImage  = course.Instructor?.ProfileImage,
+                    TotalCourses  = instructorCourseCount,
+                    TotalStudents = instructorStudentCount
+                },
+                Sections = course.Sections?.Select(s => new SectionVM
+                {
+                    Id          = s.Id,
+                    Title       = s.Title,
+                    OrderNumber = s.OrderNumber,
+                    Lessons     = s.Lessons?.Select(l => new LessonVM
+                    {
+                        Id                    = l.Id,
+                        Title                 = l.Title,
+                        OrderNumber           = l.OrderNumber,
+                        DurationMinutes       = l.DurationMinutes,
+                        IsFreePreview         = l.IsFreePreview,
+                        VideoUrl              = l.VideoUrl,
+                        VideoType             = l.VideoType,
+                        UploadedVideoFileName = l.UploadedVideoFileName,
+                        Attachments           = l.Attachments?.Select(a => new AttachmentVM
+                        {
+                            Id       = a.Id,
+                            FileName = a.FileName,
+                            FileType = a.FileType,
+                            FileSize = a.FileSize
+                        }).ToList() ?? new()
+                    }).ToList() ?? new()
+                }).ToList() ?? new(),
+                Reviews = course.Reviews?.Select(r => new ReviewDisplayVM
+                {
+                    Id          = r.Id,
+                    StudentName = r.Student?.FullName ?? "Student",
+                    Rate        = r.Rate,
+                    Comment     = r.Comment,
+                    CreatedAt   = r.CreatedAt
+                }).OrderByDescending(r => r.CreatedAt).ToList() ?? new(),
+                RelatedCourses = relatedCourses.Select(c => new CourseListVM
+                {
+                    Id             = c.Id,
+                    Title          = c.Title,
+                    Price          = c.Price,
+                    ImageUrl       = c.ImageUrl,
+                    CategoryName   = course.Category?.Name,
+                    InstructorName = c.Instructor?.FullName ?? "Instructor",
+                    AverageRating  = c.AverageRating
+                }).ToList()
             };
+
+            if (User.Identity?.IsAuthenticated == true && User.IsInRole("Student"))
+            {
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+                vm.IsEnrolled   = _context.Enrollments.Any(e => e.StudentId == userId && e.CourseId == id);
+                vm.IsInWishlist = _context.Wishlists.Any(w => w.StudentId == userId && w.CourseId == id);
+                vm.IsInCart     = _context.CartItems.Any(c => c.UserId == userId && c.CourseId == id);
+                vm.HasReviewed  = _context.Reviews.Any(r => r.StudentId == userId && r.CourseId == id);
+            }
 
             return View(vm);
         }
 
         // 4. إنشاء كورس جديد (GET)
-        //[Authorize]
+        [Authorize(Roles = "Instructor")]
         [HttpGet]
         public IActionResult Create()
         {
@@ -110,6 +196,7 @@ namespace CourseManagementSystem.Controllers
         }
 
         // 5. إنشاء كورس جديد (POST)
+        [Authorize(Roles = "Instructor")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Create(CreateCourseVM vm)
@@ -151,12 +238,15 @@ namespace CourseManagementSystem.Controllers
         }
 
         // 6. تعديل كورس (GET)
-        //[Authorize]
+        [Authorize(Roles = "Instructor")]
         [HttpGet]
         public IActionResult Edit(int id)
         {
             var course = _courseRepository.GetById(id);
             if (course == null) return NotFound();
+
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (course.InstructorId != currentUserId) return Forbid();
 
             var vm = new EditCourseVM
             {
@@ -179,6 +269,7 @@ namespace CourseManagementSystem.Controllers
         }
 
         // 7. تعديل كورس (POST)
+        [Authorize(Roles = "Instructor")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Edit(EditCourseVM vm)
@@ -196,9 +287,11 @@ namespace CourseManagementSystem.Controllers
             var course = _courseRepository.GetById(vm.Id);
             if (course == null) return NotFound();
 
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (course.InstructorId != currentUserId) return Forbid();
+
             if (vm.ImageFile != null)
             {
-                // مسح الصورة القديمة إذا وُجدت لمنع تراكم الملفات
                 DeleteImage(course.ImageUrl);
                 course.ImageUrl = UploadImage(vm.ImageFile);
             }
@@ -217,61 +310,62 @@ namespace CourseManagementSystem.Controllers
         }
 
         // 8. حذف كورس (GET)
-        //[Authorize]
+        [Authorize(Roles = "Instructor")]
         [HttpGet]
         public IActionResult Delete(int id)
         {
             var course = _courseRepository.GetCourseDetails(id);
             if (course == null) return NotFound();
+
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (course.InstructorId != currentUserId) return Forbid();
+
             return View(course);
         }
 
         // 9. تأكيد الحذف (POST)
+        [Authorize(Roles = "Instructor")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(int id)
         {
             var course = _courseRepository.GetById(id);
-            if (course != null)
-            {
-                DeleteImage(course.ImageUrl);
-                _courseRepository.Delete(id);
-                _courseRepository.Save();
-                TempData["Success"] = "Course deleted successfully!";
-            }
+            if (course == null) return RedirectToAction(nameof(InstructorCourses));
+
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (course.InstructorId != currentUserId) return Forbid();
+
+            DeleteImage(course.ImageUrl);
+            _courseRepository.Delete(id);
+            _courseRepository.Save();
+            TempData["Success"] = "Course deleted successfully!";
             return RedirectToAction(nameof(InstructorCourses));
         }
 
+        [Authorize(Roles = "Student")]
         public IActionResult AddToCart(int id)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
 
-            if (string.IsNullOrEmpty(userId))
-            {
-                TempData["Error"] = "Please login first";
-                return RedirectToAction("Login", "Account");
-            }
-
-            bool exists = _context.Wishlists.Any(w =>
-                w.StudentId == userId &&
-                w.CourseId == id);
+            bool exists = _context.CartItems.Any(c =>
+                c.UserId == userId &&
+                c.CourseId == id);
 
             if (!exists)
             {
-                _context.Wishlists.Add(new Wishlist
+                _context.CartItems.Add(new CartItem
                 {
-                    StudentId = userId,
-                    CourseId = id,
-                    AddedAt = DateTime.Now
+                    UserId = userId,
+                    CourseId = id
                 });
-
                 _context.SaveChanges();
             }
 
-            TempData["Success"] = "Course added to wishlist";
+            TempData["Success"] = "Course added to cart";
 
             return RedirectToAction(nameof(Details), new { id });
         }
+        [Authorize(Roles = "Student")]
         public IActionResult BuyNow(int id)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);

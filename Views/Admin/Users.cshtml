@@ -1,0 +1,77 @@
+@model List<CourseManagementSystem.ViewModels.AdminUserVM>
+
+@{
+    ViewData["Title"] = "Manage Users";
+}
+
+<div class="container py-5">
+    <div class="d-flex align-items-center gap-3 mb-4">
+        <a asp-controller="Admin" asp-action="Index" class="btn-outline-learnly">
+            <i class="bi bi-arrow-left me-1"></i>Back
+        </a>
+        <div>
+            <h2 class="fw-bold mb-0" style="color:var(--text);">
+                <i class="bi bi-people me-2" style="color:var(--primary);"></i>All Users
+            </h2>
+            <p class="text-muted mb-0">@Model.Count total users</p>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm" style="background:var(--card-bg);">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th class="ps-4" style="color:var(--text);">Name</th>
+                            <th style="color:var(--text);">Email</th>
+                            <th style="color:var(--text);">Role</th>
+                            <th style="color:var(--text);">Courses</th>
+                            <th style="color:var(--text);">Enrollments</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var user in Model)
+                        {
+                            var roleClass = user.Role == "Admin" ? "danger"
+                                          : user.Role == "Instructor" ? "warning"
+                                          : "success";
+                            <tr>
+                                <td class="ps-4">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="avatar" style="width:34px;height:34px;font-size:.8rem;">
+                                            @(user.FullName.Length > 0 ? user.FullName.Substring(0,1).ToUpper() : "?")
+                                        </div>
+                                        <span style="color:var(--text);">@user.FullName</span>
+                                    </div>
+                                </td>
+                                <td class="text-muted">@user.Email</td>
+                                <td><span class="badge bg-@roleClass">@user.Role</span></td>
+                                <td style="color:var(--text);">
+                                    @if (user.Role == "Instructor" && user.CourseCount > 0)
+                                    {
+                                        <span>@user.CourseCount</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">—</span>
+                                    }
+                                </td>
+                                <td style="color:var(--text);">
+                                    @if (user.Role == "Student" && user.EnrollmentCount > 0)
+                                    {
+                                        <span>@user.EnrollmentCount</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">—</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

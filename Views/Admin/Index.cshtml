@@ -1,0 +1,170 @@
+@model CourseManagementSystem.ViewModels.AdminDashboardVM
+
+@{
+    ViewData["Title"] = "Admin Panel";
+}
+
+<div class="container py-5">
+
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <div>
+            <h2 class="fw-bold mb-0" style="color:var(--text);">
+                <i class="bi bi-speedometer2 me-2" style="color:var(--primary);"></i>Admin Control Panel
+            </h2>
+            <p class="text-muted mb-0">Platform overview and management</p>
+        </div>
+    </div>
+
+    <!-- Stats Row -->
+    <div class="row g-3 mb-5">
+        <div class="col-6 col-lg-2">
+            <div class="card-stat text-center p-3">
+                <div style="font-size:2rem;color:var(--primary);"><i class="bi bi-journal-bookmark-fill"></i></div>
+                <div class="fw-bold fs-4 mt-1" style="color:var(--text);">@Model.TotalCourses</div>
+                <div class="text-muted" style="font-size:.8rem;">Courses</div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-2">
+            <div class="card-stat text-center p-3">
+                <div style="font-size:2rem;color:#10b981;"><i class="bi bi-people-fill"></i></div>
+                <div class="fw-bold fs-4 mt-1" style="color:var(--text);">@Model.TotalStudents</div>
+                <div class="text-muted" style="font-size:.8rem;">Students</div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-2">
+            <div class="card-stat text-center p-3">
+                <div style="font-size:2rem;color:#f59e0b;"><i class="bi bi-easel2-fill"></i></div>
+                <div class="fw-bold fs-4 mt-1" style="color:var(--text);">@Model.TotalInstructors</div>
+                <div class="text-muted" style="font-size:.8rem;">Instructors</div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-2">
+            <div class="card-stat text-center p-3">
+                <div style="font-size:2rem;color:#3b82f6;"><i class="bi bi-grid-fill"></i></div>
+                <div class="fw-bold fs-4 mt-1" style="color:var(--text);">@Model.TotalCategories</div>
+                <div class="text-muted" style="font-size:.8rem;">Categories</div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-2">
+            <div class="card-stat text-center p-3">
+                <div style="font-size:2rem;color:#8b5cf6;"><i class="bi bi-person-check-fill"></i></div>
+                <div class="fw-bold fs-4 mt-1" style="color:var(--text);">@Model.TotalEnrollments</div>
+                <div class="text-muted" style="font-size:.8rem;">Enrollments</div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-2">
+            <div class="card-stat text-center p-3">
+                <div style="font-size:2rem;color:#ef4444;"><i class="bi bi-star-fill"></i></div>
+                <div class="fw-bold fs-4 mt-1" style="color:var(--text);">@Model.TotalReviews</div>
+                <div class="text-muted" style="font-size:.8rem;">Reviews</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row g-3 mb-5">
+        <div class="col-12">
+            <h5 class="fw-semibold mb-3" style="color:var(--text);">Quick Actions</h5>
+        </div>
+        <div class="col-6 col-md-3">
+            <a asp-controller="Admin" asp-action="Users"
+               class="card border-0 shadow-sm text-center p-3 d-block text-decoration-none" style="background:var(--card-bg);">
+                <i class="bi bi-people fs-3 mb-2" style="color:var(--primary);"></i>
+                <div class="fw-semibold" style="color:var(--text);">Manage Users</div>
+                <small class="text-muted">View all users & roles</small>
+            </a>
+        </div>
+        <div class="col-6 col-md-3">
+            <a asp-controller="Admin" asp-action="Courses"
+               class="card border-0 shadow-sm text-center p-3 d-block text-decoration-none" style="background:var(--card-bg);">
+                <i class="bi bi-journal-bookmark fs-3 mb-2" style="color:#10b981;"></i>
+                <div class="fw-semibold" style="color:var(--text);">Manage Courses</div>
+                <small class="text-muted">Publish, toggle, delete courses</small>
+            </a>
+        </div>
+        <div class="col-6 col-md-3">
+            <a asp-controller="Admin" asp-action="Enrollments"
+               class="card border-0 shadow-sm text-center p-3 d-block text-decoration-none" style="background:var(--card-bg);">
+                <i class="bi bi-mortarboard fs-3 mb-2" style="color:#8b5cf6;"></i>
+                <div class="fw-semibold" style="color:var(--text);">Enrollments</div>
+                <small class="text-muted">View all enrollments</small>
+            </a>
+        </div>
+        <div class="col-6 col-md-3">
+            <a asp-controller="Admin" asp-action="Reviews"
+               class="card border-0 shadow-sm text-center p-3 d-block text-decoration-none" style="background:var(--card-bg);">
+                <i class="bi bi-star fs-3 mb-2" style="color:#ef4444;"></i>
+                <div class="fw-semibold" style="color:var(--text);">Reviews</div>
+                <small class="text-muted">Moderate reviews</small>
+            </a>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Recent Courses -->
+        <div class="col-lg-7">
+            <div class="card border-0 shadow-sm" style="background:var(--card-bg);">
+                <div class="card-body">
+                    <h6 class="fw-bold mb-3" style="color:var(--text);">
+                        <i class="bi bi-journal-bookmark me-2" style="color:var(--primary);"></i>Recent Courses
+                    </h6>
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th style="color:var(--text);">Title</th>
+                                    <th style="color:var(--text);">Instructor</th>
+                                    <th style="color:var(--text);">Category</th>
+                                    <th style="color:var(--text);">Price</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var course in Model.RecentCourses)
+                                {
+                                    <tr>
+                                        <td>
+                                            <a asp-controller="Course" asp-action="Details" asp-route-id="@course.Id"
+                                               style="color:var(--primary);">@course.Title</a>
+                                        </td>
+                                        <td class="text-muted">@(course.Instructor?.FullName ?? "—")</td>
+                                        <td><span class="badge" style="background:var(--primary);font-weight:500;">@(course.Category?.Name ?? "—")</span></td>
+                                        <td style="color:var(--text);">@(course.Price == 0 ? "Free" : course.Price.ToString("C"))</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="mt-3">
+                        <a asp-controller="Admin" asp-action="Courses" class="btn-outline-learnly">View All Courses</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Enrollments -->
+        <div class="col-lg-5">
+            <div class="card border-0 shadow-sm" style="background:var(--card-bg);">
+                <div class="card-body">
+                    <h6 class="fw-bold mb-3" style="color:var(--text);">
+                        <i class="bi bi-person-check me-2" style="color:#10b981;"></i>Recent Enrollments
+                    </h6>
+                    @foreach (var enrollment in Model.RecentEnrollments)
+                    {
+                        <div class="d-flex align-items-center gap-2 mb-3 pb-3" style="border-bottom:1px solid var(--border);">
+                            <div class="avatar flex-shrink-0" style="width:36px;height:36px;font-size:.85rem;">
+                                @(enrollment.Student?.FullName?.Substring(0, 1).ToUpper() ?? "?")
+                            </div>
+                            <div class="flex-grow-1 overflow-hidden">
+                                <div class="fw-semibold text-truncate" style="color:var(--text);font-size:.9rem;">@enrollment.Student?.FullName</div>
+                                <small class="text-muted text-truncate d-block">@enrollment.Course?.Title</small>
+                            </div>
+                            <small class="text-muted flex-shrink-0">@enrollment.EnrolledAt.ToString("MMM d")</small>
+                        </div>
+                    }
+                    <a asp-controller="Admin" asp-action="Enrollments" class="btn-outline-learnly">View All Enrollments</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

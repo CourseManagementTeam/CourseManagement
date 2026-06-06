@@ -1,9 +1,8 @@
-using CourseManagementSystem.Models; // تأكد من الـ namespace الصحيح للموديلز بتاعتك
+using CourseManagementSystem.Models;
 using CourseManagementSystem.ViewModels;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace CourseManagementSystem.Controllers
 {
@@ -14,6 +13,23 @@ namespace CourseManagementSystem.Controllers
         public HomeController(ApplicationDbContext db)
         {
             _db = db;
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult SetCulture(string culture, string returnUrl = "/")
+        {
+            Response.Cookies.Append(
+                CookieRequestCultureProvider.DefaultCookieName,
+                CookieRequestCultureProvider.MakeCookieValue(new RequestCulture(culture)),
+                new CookieOptions
+                {
+                    Expires = DateTimeOffset.UtcNow.AddYears(1),
+                    IsEssential = true,
+                    SameSite = SameSiteMode.Lax
+                });
+
+            return LocalRedirect(string.IsNullOrEmpty(returnUrl) ? "/" : returnUrl);
         }
 
         public async Task<IActionResult> Index()
@@ -64,8 +80,18 @@ namespace CourseManagementSystem.Controllers
          .ToListAsync(),
 
                 TotalCourses = await _db.Courses.CountAsync(),
-                TotalStudents = await _db.Users.CountAsync(),
-                TotalInstructors = await _db.Users.CountAsync(),
+                TotalStudents = await (
+                    from u in _db.Users
+                    join ur in _db.UserRoles on u.Id equals ur.UserId
+                    join r in _db.Roles on ur.RoleId equals r.Id
+                    where r.Name == "Student"
+                    select u).CountAsync(),
+                TotalInstructors = await (
+                    from u in _db.Users
+                    join ur in _db.UserRoles on u.Id equals ur.UserId
+                    join r in _db.Roles on ur.RoleId equals r.Id
+                    where r.Name == "Instructor"
+                    select u).CountAsync(),
                 TotalCategories = await _db.Categories.CountAsync(),
             };
 

@@ -1,29 +1,109 @@
-﻿@model CourseManagementSystem.Models.Category
+@model CourseManagementSystem.ViewModels.CategoryDetailsVM
 
 @{
-    ViewData["Title"] = "Category Details";
+    ViewData["Title"] = Model.Name;
+    bool isInstructor = User.IsInRole("Instructor");
+    bool isAdmin      = User.IsInRole("Admin");
 }
 
-<div class="container py-5">
-    <div class="card shadow border-0">
-        <div class="card-body p-4">
+<!-- Hero Banner -->
+<div class="py-5" style="background: var(--gradient-hero); color:#fff;">
+    <div class="container">
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+            <div>
+                <a asp-action="Index" class="badge mb-3 text-decoration-none"
+                   style="background:rgba(255,255,255,.15); color:#fff; font-size:.8rem;">
+                    <i class="bi bi-arrow-left me-1"></i> All Categories
+                </a>
+                <h1 class="display-6 fw-bold mb-2">@Model.Name</h1>
+                @if (!string.IsNullOrEmpty(Model.Description))
+                {
+                    <p class="opacity-80 mb-0" style="max-width:620px;">@Model.Description</p>
+                }
+            </div>
+            @if (isInstructor || isAdmin)
+            {
+                <a asp-controller="Course" asp-action="Create"
+                   class="btn btn-light fw-semibold px-4">
+                    <i class="bi bi-plus-circle me-1"></i> Add Course
+                </a>
+            }
+        </div>
 
-            <h2 class="mb-4">
-                Category Details
-            </h2>
-<dl class="row">
-    <dt class="col-sm-2">Name</dt>
-    <dd class="col-sm-10">@Model.Name</dd>
-
-    <dt class="col-sm-2">Description</dt>
-    <dd class="col-sm-10">@Model.Description</dd>
-</dl>
-
-<a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>
-<a asp-action="Index" class="btn btn-secondary">Back</a>
-
-
-          
+        <!-- Stats row -->
+        <div class="d-flex flex-wrap gap-4 mt-4 opacity-90" style="font-size:.95rem;">
+            <div><i class="bi bi-journal-bookmark-fill me-2"></i><strong>@Model.TotalCourses</strong> Courses</div>
+            <div><i class="bi bi-people-fill me-2"></i><strong>@Model.TotalStudents</strong> Students</div>
+            <div>
+                <i class="bi bi-star-fill text-warning me-1"></i>
+                <strong>@Model.AverageRating.ToString("0.0")</strong> Avg. Rating
+            </div>
         </div>
     </div>
+</div>
+
+<div class="container py-5">
+
+    @if (!Model.Courses.Any())
+    {
+        <div class="text-center py-5" style="color:var(--text);">
+            <i class="bi bi-journal-x" style="font-size:3.5rem; color:var(--primary); opacity:.5;"></i>
+            <h4 class="mt-3 fw-semibold">No published courses yet</h4>
+            <p class="text-muted">Check back soon or explore other categories.</p>
+            @if (isInstructor)
+            {
+                <a asp-controller="Course" asp-action="Create" class="btn btn-primary mt-2">
+                    <i class="bi bi-plus-circle me-1"></i> Create the First Course
+                </a>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="d-flex align-items-center justify-content-between mb-4">
+            <h4 class="fw-bold mb-0" style="color:var(--text);">
+                Courses in <span style="color:var(--primary);">@Model.Name</span>
+            </h4>
+            <span class="text-muted" style="font-size:.9rem;">@Model.TotalCourses course@(Model.TotalCourses == 1 ? "" : "s")</span>
+        </div>
+
+        <div class="row g-4">
+            @foreach (var course in Model.Courses)
+            {
+                <div class="col-sm-6 col-lg-4 col-xl-3">
+                    @await Html.PartialAsync("_CourseCardVM", course)
+                </div>
+            }
+        </div>
+
+        @if (isInstructor || isAdmin)
+        {
+            <div class="mt-5 p-4 rounded-4 border" style="background:var(--card-bg); border-color:var(--border)!important;">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <h6 class="fw-bold mb-1" style="color:var(--text);">
+                            <i class="bi bi-easel2 me-2" style="color:var(--primary);"></i>
+                            @(isInstructor ? "Add your course to this category" : "Manage this category")
+                        </h6>
+                        <p class="text-muted mb-0" style="font-size:.88rem;">
+                            @(isInstructor
+                                ? "Create a new course and select this category during setup."
+                                : "Edit category details or create a course in this category.")
+                        </p>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <a asp-controller="Course" asp-action="Create" class="btn btn-primary btn-sm">
+                            <i class="bi bi-plus-circle me-1"></i> New Course
+                        </a>
+                        @if (isAdmin)
+                        {
+                            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-warning btn-sm">
+                                <i class="bi bi-pencil me-1"></i> Edit Category
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    }
 </div>

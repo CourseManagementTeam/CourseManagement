@@ -2,9 +2,9 @@ using CourseManagementSystem.Data;
 using CourseManagementSystem.Models;
 using CourseManagementSystem.Repository;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
+
 namespace CourseManagementSystem
 {
     public class Program
@@ -22,8 +22,7 @@ namespace CourseManagementSystem
 
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-          
-            //price
+            // Price Culture
             var culture = new CultureInfo("en-US");
             CultureInfo.DefaultThreadCurrentCulture = culture;
             CultureInfo.DefaultThreadCurrentUICulture = culture;
@@ -43,22 +42,7 @@ namespace CourseManagementSystem
                 options.LogoutPath = "/Account/Logout";
                 options.AccessDeniedPath = "/Account/AccessDenied";
             });
-<<<<<<< HEAD
-            builder.Services
-    .AddControllersWithViews()
-    .AddViewLocalization();
-            //******************* Register Repositories *******************
-            builder.Services.AddScoped<ICourseRepository, CourseRepository>();
-            builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
-            builder.Services.AddScoped<ISectionRepository, SectionRepository>();
-            builder.Services.AddScoped<ILessonRepository, LessonRepository>();
-            builder.Services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
-            builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
-            builder.Services.AddScoped<IWishlistRepository, WishlistRepository>();
-            builder.Services.AddScoped<ICartRepository, CartRepository>();
-=======
 
->>>>>>> dev
             builder.Services.AddLocalization(options =>
             {
                 options.ResourcesPath = "Resources";
@@ -78,31 +62,18 @@ namespace CourseManagementSystem
             builder.Services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
             builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
             builder.Services.AddScoped<IWishlistRepository, WishlistRepository>();
+            builder.Services.AddScoped<ICartRepository, CartRepository>();
 
             var app = builder.Build();
 
-<<<<<<< HEAD
+            // Apply pending migrations and seed data
             using (var scope = app.Services.CreateScope())
             {
-                var services = scope.ServiceProvider;
-                //await SeedData.Initialize(services);
-            }
-=======
-            // Seed Roles
-            using (var scope = app.Services.CreateScope())
-            {
-                var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-
-                foreach (var role in new[] { "Admin", "Instructor", "Student" })
-                {
-                    if (!await roleManager.RoleExistsAsync(role))
-                    {
-                        await roleManager.CreateAsync(new IdentityRole(role));
-                    }
-                }
+                var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                await db.Database.MigrateAsync();
+                await SeedData.Initialize(scope.ServiceProvider);
             }
 
->>>>>>> dev
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
@@ -113,19 +84,7 @@ namespace CourseManagementSystem
                 app.UseExceptionHandler("/Home/Error");
             }
 
-            app.UseRouting();
-
-            app.UseAuthentication();
-            app.UseAuthorization();
-
-            app.MapStaticAssets();
-
-            var supportedCultures = new[]
-            {
-                "en",
-                "ar"
-            };
-
+            var supportedCultures = new[] { "en", "ar" };
             var localizationOptions = new RequestLocalizationOptions()
                 .SetDefaultCulture("en")
                 .AddSupportedCultures(supportedCultures)
@@ -133,13 +92,20 @@ namespace CourseManagementSystem
 
             app.UseRequestLocalization(localizationOptions);
 
+            app.UseRouting();
+
+            app.UseAuthentication();
+            app.UseAuthorization();
+
+            app.MapStaticAssets();
+
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}")
                 .WithStaticAssets();
 
-            //app.MapRazorPages()
-            //    .WithStaticAssets();
+            // app.MapRazorPages()
+            //     .WithStaticAssets();
 
             app.Run();
         }

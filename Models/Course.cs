@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using static System.Collections.Specialized.BitVector32;
 
 namespace CourseManagementSystem.Models
 {
@@ -31,6 +30,8 @@ namespace CourseManagementSystem.Models
         public bool IsPublished { get; set; } = false;
 
         public string? Level { get; set; }
+
+        public string? WhatYouWillLearn { get; set; }
 
         //******** Foreign Keys ****************
         public string InstructorId { get; set; }

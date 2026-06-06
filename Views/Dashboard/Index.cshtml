@@ -1,90 +1,106 @@
-﻿@model CourseManagementSystem.ViewModels.StudentDashboardVM
+@model CourseManagementSystem.ViewModels.StudentDashboardVM
 
 @{
     ViewData["Title"] = "Dashboard";
 }
 
-<div class="container py-4">
+<div class="container py-5">
 
-    <h2 class="fw-bold mb-4">
-        <i class="bi bi-speedometer2"></i>
-        Student Dashboard
+    <h2 class="fw-bold mb-1" style="color:var(--text);">
+        <i class="bi bi-speedometer2 me-2" style="color:var(--primary);"></i>Student Dashboard
     </h2>
+    <p class="text-muted mb-5">Track your learning progress and activity.</p>
 
     <div class="row g-4 mb-5">
-
-        <div class="col-md-3">
-            <div class="card border-0 shadow-sm">
-                <div class="card-body text-center">
-                    <h2 class="text-primary">@Model.TotalCourses</h2>
-                    <p class="mb-0">Enrolled Courses</p>
-                </div>
+        <div class="col-6 col-md-3">
+            <div class="card-stat text-center p-4">
+                <div style="font-size:2rem;color:var(--primary);"><i class="bi bi-journal-bookmark-fill"></i></div>
+                <div class="fw-bold mt-2" style="font-size:2rem;color:var(--text);">@Model.TotalCourses</div>
+                <div class="text-muted" style="font-size:.85rem;">Enrolled Courses</div>
             </div>
         </div>
-
-        <div class="col-md-3">
-            <div class="card border-0 shadow-sm">
-                <div class="card-body text-center">
-                    <h2 class="text-success">@Model.CompletedCourses</h2>
-                    <p class="mb-0">Completed</p>
-                </div>
+        <div class="col-6 col-md-3">
+            <div class="card-stat text-center p-4">
+                <div style="font-size:2rem;color:#10b981;"><i class="bi bi-patch-check-fill"></i></div>
+                <div class="fw-bold mt-2" style="font-size:2rem;color:var(--text);">@Model.CompletedCourses</div>
+                <div class="text-muted" style="font-size:.85rem;">Completed</div>
             </div>
         </div>
-
-        <div class="col-md-3">
-            <div class="card border-0 shadow-sm">
-                <div class="card-body text-center">
-                    <h2 class="text-danger">@Model.WishlistCount</h2>
-                    <p class="mb-0">Wishlist</p>
-                </div>
+        <div class="col-6 col-md-3">
+            <div class="card-stat text-center p-4">
+                <div style="font-size:2rem;color:#ef4444;"><i class="bi bi-heart-fill"></i></div>
+                <div class="fw-bold mt-2" style="font-size:2rem;color:var(--text);">@Model.WishlistCount</div>
+                <div class="text-muted" style="font-size:.85rem;">Wishlist</div>
             </div>
         </div>
-
-        <div class="col-md-3">
-            <div class="card border-0 shadow-sm">
-                <div class="card-body text-center">
-                    <h2 class="text-warning">@Model.ReviewsCount</h2>
-                    <p class="mb-0">Reviews</p>
-                </div>
+        <div class="col-6 col-md-3">
+            <div class="card-stat text-center p-4">
+                <div style="font-size:2rem;color:#f59e0b;"><i class="bi bi-star-fill"></i></div>
+                <div class="fw-bold mt-2" style="font-size:2rem;color:var(--text);">@Model.ReviewsCount</div>
+                <div class="text-muted" style="font-size:.85rem;">Reviews</div>
             </div>
         </div>
-
     </div>
 
-    <h3 class="fw-bold mb-3">
-        Recent Reviews
-    </h3>
-
-    @if (Model.RecentReviews.Any())
-    {
-        @foreach (var review in Model.RecentReviews)
-        {
-            <div class="card shadow-sm mb-3">
-
-                <div class="card-body">
-
-                    <h5>
-                        @review.Course?.Title
-                    </h5>
-
-                    <span class="badge bg-warning text-dark">
-                        @review.Rate / 5
-                    </span>
-
-                    <p class="mt-2">
-                        @review.Comment
-                    </p>
-
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <h4 class="fw-bold mb-3" style="color:var(--text);">My Enrolled Courses</h4>
+            @if (Model.Enrollments.Any())
+            {
+                <div class="row g-3">
+                    @foreach (var enrollment in Model.Enrollments.Take(4))
+                    {
+                        @await Html.PartialAsync("_CourseCard", enrollment.Course)
+                    }
                 </div>
-
-            </div>
-        }
-    }
-    else
-    {
-        <div class="alert alert-info">
-            No reviews yet.
+                @if (Model.Enrollments.Count > 4)
+                {
+                    <div class="mt-3">
+                        <a asp-controller="Enrollment" asp-action="MyCourses" class="btn-outline-learnly">
+                            View all @Model.Enrollments.Count courses
+                        </a>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="card border-0 shadow-sm text-center py-5" style="background:var(--card-bg);">
+                    <i class="bi bi-journal-x" style="font-size:3rem;color:var(--primary);opacity:.4;"></i>
+                    <p class="mt-3 text-muted">No courses enrolled yet.</p>
+                    <a asp-controller="Course" asp-action="Index" class="btn-primary-learnly d-inline-block mt-2">Browse Courses</a>
+                </div>
+            }
         </div>
-    }
+
+        <div class="col-lg-4">
+            <h4 class="fw-bold mb-3" style="color:var(--text);">Recent Reviews</h4>
+            @if (Model.RecentReviews.Any())
+            {
+                @foreach (var review in Model.RecentReviews)
+                {
+                    <div class="card border-0 shadow-sm mb-3" style="background:var(--card-bg);">
+                        <div class="card-body p-3">
+                            <div class="fw-semibold mb-1" style="color:var(--text);font-size:.9rem;">@review.Course?.Title</div>
+                            <div class="mb-2">
+                                @for (int i = 1; i <= 5; i++)
+                                {
+                                    <i class="bi bi-star-fill" style="font-size:.75rem;color:@(i <= review.Rate ? "#f59e0b" : "var(--border)");"></i>
+                                }
+                                <span class="text-muted ms-1" style="font-size:.78rem;">@review.Rate / 5</span>
+                            </div>
+                            <p class="mb-0 text-muted" style="font-size:.85rem;">@review.Comment</p>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="card border-0 shadow-sm text-center py-4" style="background:var(--card-bg);">
+                    <i class="bi bi-star" style="font-size:2rem;color:var(--primary);opacity:.4;"></i>
+                    <p class="mt-2 text-muted mb-0" style="font-size:.9rem;">No reviews yet.</p>
+                </div>
+            }
+        </div>
+    </div>
 
 </div>

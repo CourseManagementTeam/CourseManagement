@@ -102,6 +102,14 @@ namespace CourseManagementSystem.Controllers
                 TempData["Success"] = "Welcome back!";
                 if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
                     return Redirect(returnUrl);
+
+                var loggedInUser = await _userManager.FindByEmailAsync(model.Email);
+                var roles = await _userManager.GetRolesAsync(loggedInUser!);
+
+                if (roles.Contains("Admin"))
+                    return RedirectToAction("Index", "Admin");
+                if (roles.Contains("Instructor"))
+                    return RedirectToAction("Dashboard", "Instructor");
                 return RedirectToAction("Index", "Home");
             }
 

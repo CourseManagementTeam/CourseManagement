@@ -97,6 +97,64 @@ namespace CourseManagementSystem.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("CourseManagementSystem.Models.Attachment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<long>("FileSize")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("FileType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("LessonId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("StoredFileName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("UploadedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LessonId");
+
+                    b.ToTable("Attachments");
+                });
+
+            modelBuilder.Entity("CourseManagementSystem.Models.CartItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CourseId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CourseId");
+
+                    b.ToTable("CartItems");
+                });
+
             modelBuilder.Entity("CourseManagementSystem.Models.Category", b =>
                 {
                     b.Property<int>("Id")
@@ -167,6 +225,9 @@ namespace CourseManagementSystem.Migrations
                     b.Property<int>("TotalHours")
                         .HasColumnType("int");
 
+                    b.Property<string>("WhatYouWillLearn")
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CategoryId");
@@ -222,6 +283,12 @@ namespace CourseManagementSystem.Migrations
 
                     b.Property<string>("Title")
                         .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UploadedVideoFileName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("VideoType")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("VideoUrl")
@@ -474,6 +541,28 @@ namespace CourseManagementSystem.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("CourseManagementSystem.Models.Attachment", b =>
+                {
+                    b.HasOne("CourseManagementSystem.Models.Lesson", "Lesson")
+                        .WithMany("Attachments")
+                        .HasForeignKey("LessonId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Lesson");
+                });
+
+            modelBuilder.Entity("CourseManagementSystem.Models.CartItem", b =>
+                {
+                    b.HasOne("CourseManagementSystem.Models.Course", "Course")
+                        .WithMany()
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Course");
+                });
+
             modelBuilder.Entity("CourseManagementSystem.Models.Course", b =>
                 {
                     b.HasOne("CourseManagementSystem.Models.Category", "Category")
@@ -673,6 +762,8 @@ namespace CourseManagementSystem.Migrations
 
             modelBuilder.Entity("CourseManagementSystem.Models.Lesson", b =>
                 {
+                    b.Navigation("Attachments");
+
                     b.Navigation("LessonProgresses");
                 });
 

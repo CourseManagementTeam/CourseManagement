@@ -1,4 +1,4 @@
-﻿namespace CourseManagementSystem.Resources
+namespace CourseManagementSystem
 {
     public class SharedResource
     {

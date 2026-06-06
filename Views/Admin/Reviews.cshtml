@@ -1,0 +1,80 @@
+@model List<CourseManagementSystem.Models.Review>
+
+@{
+    ViewData["Title"] = "Reviews";
+}
+
+<div class="container py-5">
+    <div class="d-flex align-items-center gap-3 mb-4">
+        <a asp-controller="Admin" asp-action="Index" class="btn-outline-learnly">
+            <i class="bi bi-arrow-left me-1"></i>Back
+        </a>
+        <div>
+            <h2 class="fw-bold mb-0" style="color:var(--text);">
+                <i class="bi bi-star me-2" style="color:var(--primary);"></i>All Reviews
+            </h2>
+            <p class="text-muted mb-0">@Model.Count total reviews</p>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm" style="background:var(--card-bg);">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th class="ps-4" style="color:var(--text);">Student</th>
+                            <th style="color:var(--text);">Course</th>
+                            <th style="color:var(--text);">Rating</th>
+                            <th style="color:var(--text);">Comment</th>
+                            <th style="color:var(--text);">Date</th>
+                            <th style="color:var(--text);">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var r in Model)
+                        {
+                            <tr>
+                                <td class="ps-4">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="avatar" style="width:32px;height:32px;font-size:.78rem;">
+                                            @(r.Student?.FullName?.Substring(0,1).ToUpper() ?? "?")
+                                        </div>
+                                        <span style="color:var(--text); font-size:.9rem;">@r.Student?.FullName</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <a asp-controller="Course" asp-action="Details" asp-route-id="@r.CourseId"
+                                       style="color:var(--primary); font-size:.9rem;">@r.Course?.Title</a>
+                                </td>
+                                <td>
+                                    @for (int i = 1; i <= 5; i++)
+                                    {
+                                        <i class="bi @(i <= r.Rate ? "bi-star-fill text-warning" : "bi-star text-muted")"
+                                           style="font-size:.8rem;"></i>
+                                    }
+                                </td>
+                                <td style="color:var(--text); font-size:.85rem; max-width:280px;">
+                                    <span class="text-truncate d-block" style="max-width:260px;" title="@r.Comment">
+                                        @(string.IsNullOrEmpty(r.Comment) ? "—" : r.Comment)
+                                    </span>
+                                </td>
+                                <td class="text-muted" style="font-size:.85rem;">@r.CreatedAt.ToString("MMM dd, yyyy")</td>
+                                <td>
+                                    <form asp-controller="Admin" asp-action="DeleteReview" method="post"
+                                          onsubmit="return confirm('Delete this review?');">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@r.Id" />
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
